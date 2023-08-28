@@ -127,6 +127,8 @@ MonoBehaviour:
   rig: {fileID: 4779941412160733341}
   playerBullet: {fileID: 7870620376593159761, guid: c63dd1b4c06c171469abd91068429703, type: 3}
   fireRate: 3
+  prefabCrap: {fileID: 1737276494723737835, guid: c6b171fdb8ab9524998fab9995637e30, type: 3}
+  prefabBullet: {fileID: 6970286270433406021, guid: c63dd1b4c06c171469abd91068429703, type: 3}
 --- !u!50 &4779941412160733341
 Rigidbody2D:
   serializedVersion: 4
