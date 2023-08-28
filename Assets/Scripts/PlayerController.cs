@@ -15,28 +15,37 @@ public class PlayerController : NetworkBehaviour
     private float timeSinceLastFire;
     public int fireRate;
 
+
+    public GameObject prefabCrap;
+    public GameObject prefabBullet;
+
+    void colorCodeToPlayer (GameObject go, ulong playerNumber) {
+        if (playerNumber == 0) {
+            go.GetComponent<Renderer>().material.color = Color.red;
+        }
+        if (playerNumber == 1) {
+            go.GetComponent<Renderer>().material.color = Color.blue;
+        }
+        if (playerNumber == 2) {
+            go.GetComponent<Renderer>().material.color = Color.yellow;
+        }
+        if (playerNumber == 3) {
+            go.GetComponent<Renderer>().material.color = Color.green;
+        }
+    }
+
     void Start()
     {
         _mainCamera = Camera.main;
-        playerNumber = gameObject.GetComponent<NetworkObject>().NetworkObjectId;
+        playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         outline = gameObject.transform.GetChild(0).gameObject;
 
 
         // Change outline
-        if (playerNumber == 1) {
-            outline.GetComponent<Renderer>().material.color = Color.red;
-        }
-        if (playerNumber == 2) {
-            outline.GetComponent<Renderer>().material.color = Color.blue;
-        }
-        if (playerNumber == 3) {
-            outline.GetComponent<Renderer>().material.color = Color.yellow;
-        }
-        if (playerNumber == 4) {
-            outline.GetComponent<Renderer>().material.color = Color.green;
-        }
+        colorCodeToPlayer(outline, playerNumber);
 
     }
+
     void Update()
     {
         if (!IsOwner) {
@@ -45,33 +54,47 @@ public class PlayerController : NetworkBehaviour
 
         if (Input.GetButton("Fire1"))
         {
+
             if ((Time.time - timeSinceLastFire) > (1f/fireRate)) {
-                Debug.Log((Time.time - timeSinceLastFire));
-                Rigidbody2D clone;
+                //Rigidbody2D clone;
+                GameObject clone;
                 Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
                 Vector2 direction = worldMousePos - transform.position;
                 direction.Normalize();
-                clone = Instantiate(playerBullet, transform.position, transform.rotation);
+                clone = Instantiate(prefabBullet, transform.position, transform.rotation);
+                if (IsServer) {
+                    clone.GetComponent<NetworkObject>().Spawn();
+                }
+                /*Debug.Log("1: " + clone.gameObject.GetComponent<NetworkObject>().IsSpawned);
+                if (IsServer) {
+                    clone.gameObject.GetComponent<NetworkObject>().Spawn();
+                    Debug.Log("2: " + clone.gameObject.GetComponent<NetworkObject>().IsSpawned);
+                }
+                Debug.Log("3: " + clone.gameObject.GetComponent<NetworkObject>().IsSpawned);*/
+                
                 clone.GetComponent<PlayerBullet>().bulletDamage = 3;
-                clone.GetComponent<PlayerBullet>().bulletSpeed = 30f;
-                clone.velocity = (direction) * (bulletSpeed);
-                // Change bullet color
-                if (playerNumber == 1) {
-                    clone.GetComponent<Renderer>().material.color = Color.red;
-                }
-                if (playerNumber == 2) {
-                    clone.GetComponent<Renderer>().material.color = Color.blue;
-                }
-                if (playerNumber == 3) {
-                    clone.GetComponent<Renderer>().material.color = Color.yellow;
-                }
-                if (playerNumber == 4) {
-                    clone.GetComponent<Renderer>().material.color = Color.green;
-                }
+                clone.GetComponent<PlayerBullet>().bulletSpeed = 3f;
+                clone.GetComponent<Rigidbody2D>().velocity = (direction) * (bulletSpeed);
+                
+                colorCodeToPlayer(clone.gameObject, playerNumber);
 
                 // Update timeSinceLastFire
                 timeSinceLastFire = Time.time;
             }
+            
+        }
+
+        if (Input.GetKeyDown("f")){
+            if (IsServer) {
+                GameObject crap;
+                crap = Instantiate(prefabCrap, transform.position, transform.rotation);
+                crap.GetComponent<Renderer>().material.color = Color.red;
+                crap.GetComponent<NetworkObject>().SpawnWithOwnership(playerNumber);
+            } else {
+                Debug.Log("Called");
+                spawnCrapServerRpc();
+            }
+            //spawnCrapClientRpc();
             
         }
     }
@@ -90,5 +113,14 @@ public class PlayerController : NetworkBehaviour
         } else {
             rig.velocity = new Vector2(xInput * playerSpeed * 0.707f, yInput * playerSpeed* 0.707f);
         }
+    }
+
+    [ServerRpc]
+    void spawnCrapServerRpc() {
+        Debug.Log("Called 2" );
+        GameObject crap;
+        crap = Instantiate(prefabCrap, transform.position, transform.rotation);
+        crap.GetComponent<Renderer>().material.color = Color.blue;
+        crap.GetComponent<NetworkObject>().SpawnWithOwnership(playerNumber);
     }
 }
