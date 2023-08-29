@@ -10,6 +10,7 @@ public class ItemController : MonoBehaviour
     public bool Clicked  = false; 
     public TextMeshProUGUI quantityText;
     private LevelEditorManager editor; 
+    private GameObject tempObject;
     // Start is called before the first frame update
     void Start()
     {
@@ -21,11 +22,23 @@ public class ItemController : MonoBehaviour
     public void ButtonClicked()
     {
         if(quantity > 0 ){
+            Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
             Clicked = true; 
+            tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
+            tempObject.GetComponent<Renderer>().material.color = Color.red;
             quantity--;
             quantityText.text = quantity.ToString(); 
             editor.CurrentButtonPressed = ID;
         }
         
+    }
+    void Update(){
+        if(tempObject != null){
+            Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
+            Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+            
+            tempObject.transform.position = worldPosition; 
+        }
     }
 }
