@@ -244,6 +244,11 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d124674171147ee498c4b6d120f6bef1, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  ItemButtons:
+  - {fileID: 1594562084}
+  ItemPrefabs:
+  - {fileID: 8112366325697439444, guid: d49307185b298974085e552fb7e7f2b2, type: 3}
+  CurrentButtonPressed: 0
 --- !u!4 &520620369
 Transform:
   m_ObjectHideFlags: 0
