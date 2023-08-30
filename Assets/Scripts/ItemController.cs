@@ -1,3 +1,5 @@
+//This script is placed ona  button, the button contains the quantityof an item that can be placed
+// each time the button is pressed a 'fake' item is created and then destroyed when it is placed again
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
@@ -19,7 +21,7 @@ public class ItemController : MonoBehaviour
     }
 
     // Update is called once per frame
-    public void ButtonClicked()
+    public void ButtonClicked() //if the button is clicked
     {
         if(quantity > 0 ){
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -39,6 +41,9 @@ public class ItemController : MonoBehaviour
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
             
             tempObject.transform.position = worldPosition; 
+            if(Input.GetMouseButtonDown(0)){
+                Destroy(tempObject);
+            }
         }
     }
 }
