@@ -5,6 +5,7 @@ using UnityEngine;
 public class TurretScript : MonoBehaviour
 {
     private GameObject Target;
+    private List<GameObject> playersIn = new List<GameObject>();
     private bool detected = false;
     public GameObject alertLight;
     public GameObject canonGun;
@@ -22,9 +23,9 @@ public class TurretScript : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Player")){
             Debug.Log($"Detected player");
-            Target = GameObject.FindGameObjectWithTag("Player");
+            playersIn.Add(other.gameObject);
+            UpdateTarget();
             detected = true;
-            Direction = Target.transform.position - transform.position;
             alertLight.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
@@ -32,6 +33,17 @@ public class TurretScript : MonoBehaviour
     void OnTriggerExit2D(Collider2D other) {
         if (other.CompareTag("Player")){
             Debug.Log($"Player Out");
+            playersIn.Remove(other.gameObject);
+            UpdateTarget();
+        }
+    }
+
+    void UpdateTarget(){
+        if (playersIn.Count > 0){
+            Target = playersIn[playersIn.Count - 1];
+        }
+        else{
+            Target = null;
             detected = false;
             alertLight.GetComponent<SpriteRenderer>().color = Color.white;
         }
