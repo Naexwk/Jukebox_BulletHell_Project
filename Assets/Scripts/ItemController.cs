@@ -13,6 +13,7 @@ public class ItemController : MonoBehaviour
     public TextMeshProUGUI quantityText;
     private LevelEditorManager editor; 
     private GameObject tempObject;
+    private Renderer tempRend;
     // Start is called before the first frame update
     void Start()
     {
@@ -26,9 +27,15 @@ public class ItemController : MonoBehaviour
         if(quantity > 0 ){
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
+
             Clicked = true; 
+
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
-            tempObject.GetComponent<Renderer>().material.color = Color.red;
+            tempRend = tempObject.GetComponent<Renderer>();
+            Color currentColor = tempRend.material.color; 
+            float newAlpha = 0.5f;
+            tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, newAlpha);
+
             quantity--;
             quantityText.text = quantity.ToString(); 
             editor.CurrentButtonPressed = ID;
