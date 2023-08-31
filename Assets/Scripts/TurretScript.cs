@@ -45,7 +45,7 @@ public class TurretScript : MonoBehaviour
         else{
             Target = null;
             detected = false;
-            alertLight.GetComponent<SpriteRenderer>().color = Color.white;
+            alertLight.GetComponent<SpriteRenderer>().color = Color.black;
         }
     }
 
