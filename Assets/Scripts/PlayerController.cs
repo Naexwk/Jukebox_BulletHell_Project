@@ -2,6 +2,7 @@
 using UnityEngine;
 using Unity.Netcode;
 
+delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
 {
     public float playerSpeed;
@@ -13,11 +14,22 @@ public class PlayerController : NetworkBehaviour
     private ulong playerNumber;
     private GameObject outline;
     private float timeSinceLastFire;
+    // Fire rate (in bullets per second)
     public int fireRate;
+    public int bulletDamage;
 
 
     public GameObject prefabCrap;
     public GameObject prefabBullet;
+    public GameObject prefabFakeBullet;
+    public GameObject prefabCheeseBullet;
+    public string characterCode = "cheeseman";
+    // Special ability cooldown (in seconds)
+    public float abilityCooldown;
+    private float timeSinceLastAbility;
+    public int abilityDamage;
+
+    specialAbility specAb;
 
     void colorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
@@ -40,9 +52,13 @@ public class PlayerController : NetworkBehaviour
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         outline = gameObject.transform.GetChild(0).gameObject;
 
-
         // Change outline
         colorCodeToPlayer(outline, playerNumber);
+        if (characterCode == "cheeseman") {
+            specAb = new specialAbility(CheesemanSA);
+        }
+
+        
 
     }
 
@@ -52,34 +68,22 @@ public class PlayerController : NetworkBehaviour
             return;
         }
 
-        if (Input.GetButton("Fire1"))
+        if (Input.GetKey(KeyCode.Mouse0))
         {
 
             if ((Time.time - timeSinceLastFire) > (1f/fireRate)) {
-                //Rigidbody2D clone;
-                GameObject clone;
                 Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
                 Vector2 direction = worldMousePos - transform.position;
                 direction.Normalize();
-                clone = Instantiate(prefabBullet, transform.position, transform.rotation);
-                if (IsServer) {
-                    clone.GetComponent<NetworkObject>().Spawn();
-                }
-                /*Debug.Log("1: " + clone.gameObject.GetComponent<NetworkObject>().IsSpawned);
-                if (IsServer) {
-                    clone.gameObject.GetComponent<NetworkObject>().Spawn();
-                    Debug.Log("2: " + clone.gameObject.GetComponent<NetworkObject>().IsSpawned);
-                }
-                Debug.Log("3: " + clone.gameObject.GetComponent<NetworkObject>().IsSpawned);*/
-                
-                clone.GetComponent<PlayerBullet>().bulletDamage = 3;
-                clone.GetComponent<PlayerBullet>().bulletSpeed = 3f;
-                clone.GetComponent<Rigidbody2D>().velocity = (direction) * (bulletSpeed);
-                
-                colorCodeToPlayer(clone.gameObject, playerNumber);
-
-                // Update timeSinceLastFire
+                spawnBulletServerRpc(bulletSpeed, bulletDamage, direction, playerNumber);
                 timeSinceLastFire = Time.time;
+            }
+            
+        }
+
+        if (Input.GetKey(KeyCode.Mouse1)){
+            if ((Time.time - timeSinceLastAbility) > (abilityCooldown)) {
+                specAb();
             }
             
         }
@@ -94,9 +98,9 @@ public class PlayerController : NetworkBehaviour
                 Debug.Log("Called");
                 spawnCrapServerRpc();
             }
-            //spawnCrapClientRpc();
-            
         }
+
+        
     }
 
 
@@ -117,10 +121,67 @@ public class PlayerController : NetworkBehaviour
 
     [ServerRpc]
     void spawnCrapServerRpc() {
-        Debug.Log("Called 2" );
         GameObject crap;
         crap = Instantiate(prefabCrap, transform.position, transform.rotation);
         crap.GetComponent<Renderer>().material.color = Color.blue;
-        crap.GetComponent<NetworkObject>().SpawnWithOwnership(playerNumber);
+        crap.GetComponent<NetworkObject>().Spawn();
     }
+
+    [ServerRpc]
+    void spawnBulletServerRpc(float _bulletSpeed, int _bulletDamage, Vector2 _direction, ulong playerNumber) {
+        GameObject clone;
+        clone = Instantiate(prefabBullet, transform.position, transform.rotation);
+        clone.GetComponent<PlayerBullet>().bulletDamage = _bulletDamage;
+        clone.GetComponent<PlayerBullet>().bulletSpeed = _bulletSpeed;
+        clone.GetComponent<PlayerBullet>().bulletDirection = _direction;
+        clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
+        colorCodeToPlayer(clone, playerNumber);
+        clone.GetComponent<NetworkObject>().Spawn();
+        spawnFakeBulletsClientRPC(_bulletSpeed, _direction);
+    }
+    [ClientRpc]
+    void spawnFakeBulletsClientRPC(float _bulletSpeed, Vector2 _direction){
+
+        if (!IsServer){
+            GameObject clone;
+            clone = Instantiate(prefabFakeBullet, transform.position, transform.rotation);
+            clone.GetComponent<FakePlayerBullet>().bulletSpeed = _bulletSpeed;
+            clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
+            colorCodeToPlayer(clone, playerNumber);
+        }
+        
+    }
+
+    
+
+    private void CheesemanSA () {
+        
+            Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
+            Vector2 direction = worldMousePos - transform.position;
+            direction.Normalize();
+            timeSinceLastAbility = Time.time;
+            if (!IsServer){
+                GameObject clone;
+                clone = Instantiate(prefabCheeseBullet, transform.position, transform.rotation);
+                Physics2D.IgnoreCollision(clone.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+                clone.GetComponent<CheeseBullet>().cheeseDamage = 0;
+                clone.GetComponent<Rigidbody2D>().velocity = (direction) * (10f);
+            }
+            spawnCheeseBulletServerRpc(direction, playerNumber);
+    }
+
+    [ServerRpc]
+    void spawnCheeseBulletServerRpc(Vector2 _direction, ulong playerNumber) {
+        GameObject clone;
+        clone = Instantiate(prefabCheeseBullet, transform.position, transform.rotation);
+        Physics2D.IgnoreCollision(clone.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+        clone.GetComponent<CheeseBullet>().cheeseDamage = abilityDamage;
+        clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (10f);
+        clone.GetComponent<NetworkObject>().Spawn();
+        if (playerNumber != 0) {
+            clone.GetComponent<NetworkObject>().NetworkHide(playerNumber);
+        }
+        
+    }
+
 }

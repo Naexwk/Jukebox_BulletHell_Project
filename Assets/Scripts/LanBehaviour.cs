@@ -5,7 +5,7 @@ using TMPro;
 using System.Net;
 using System.Net.Sockets;
 
-public class LanBehaviour : MonoBehaviour
+public class LanBehaviour : NetworkBehaviour
 {
 	private PlayerController pc;
 	private bool pcAssigned;
@@ -26,6 +26,7 @@ public class LanBehaviour : MonoBehaviour
 	public void StartHost() {
 		NetworkManager.Singleton.StartHost();
 		GetLocalIPAddress();
+
 	}
 
 	// To Join a game
@@ -35,6 +36,7 @@ public class LanBehaviour : MonoBehaviour
         //Debug.Log("Starting on " + ipAddress);
 		SetIpAddress();
 		NetworkManager.Singleton.StartClient();
+
 	}
 
 	/* Gets the Ip Address of your connected network and
