@@ -16,7 +16,18 @@ public class enemyBulletScript : MonoBehaviour
         
     }
 
-    void OnCollisionEnter2D(Collision2D Col) {
-        Destroy(this.gameObject);
+    void OnTriggerEnter2D(Collider2D col) {
+        
+        if (col.gameObject.tag == "Wall")
+        {
+
+            Destroy(this.gameObject);
+        }
+
+        if (col.gameObject.tag == "Player")
+        {
+            col.gameObject.GetComponent<PlayerController>().GetHit();
+            Destroy(this.gameObject);
+        }
     }
 }
