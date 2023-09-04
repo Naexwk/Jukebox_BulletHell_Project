@@ -1,6 +1,7 @@
 
 using UnityEngine;
 using Unity.Netcode;
+using System;
 
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
@@ -11,7 +12,7 @@ public class PlayerController : NetworkBehaviour
     public Rigidbody2D playerBullet;
     Vector2 rb;
     private Camera _mainCamera;
-    private ulong playerNumber;
+    public ulong playerNumber;
     private GameObject outline;
     private float timeSinceLastFire;
     // Fire rate (in bullets per second)
@@ -29,7 +30,16 @@ public class PlayerController : NetworkBehaviour
     private float timeSinceLastAbility;
     public int abilityDamage;
 
+    public bool enableControl = false;
+
+    public GameObject cameraTargetPrefab;
+
     specialAbility specAb;
+
+
+
+    // hardcodeado porque unity me odia
+    private Vector3[] spawnPositions = { new Vector3(15f,4.5f,0f), new Vector3(16f,-9.23f,0f), new Vector3(-12.5f,-10f,0f), new Vector3(-18f,6.85f,0f) };
 
     void colorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
@@ -57,7 +67,9 @@ public class PlayerController : NetworkBehaviour
         if (characterCode == "cheeseman") {
             specAb = new specialAbility(CheesemanSA);
         }
-
+        if (IsOwner) {
+            spawnCameraTargetServerRpc(playerNumber);
+        }
         
 
     }
@@ -65,6 +77,10 @@ public class PlayerController : NetworkBehaviour
     void Update()
     {
         if (!IsOwner) {
+            return;
+        }
+
+        if (!enableControl){
             return;
         }
 
@@ -109,6 +125,11 @@ public class PlayerController : NetworkBehaviour
         if (!IsOwner) {
             return;
         }
+
+        if (!enableControl){
+            return;
+        }
+
         float xInput = Input.GetAxisRaw("Horizontal");
         float yInput = Input.GetAxisRaw("Vertical");
 
@@ -136,7 +157,6 @@ public class PlayerController : NetworkBehaviour
         clone.GetComponent<PlayerBullet>().bulletDirection = _direction;
         clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
         colorCodeToPlayer(clone, playerNumber);
-        clone.GetComponent<NetworkObject>().Spawn();
         spawnFakeBulletsClientRPC(_bulletSpeed, _direction);
     }
     [ClientRpc]
@@ -183,5 +203,42 @@ public class PlayerController : NetworkBehaviour
         }
         
     }
+
+
+    [ClientRpc]
+    public void spawnPlayerClientRpc(){
+        gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
+        enableControl = true;
+        
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void spawnCameraTargetServerRpc(ulong _playerNumber){
+        Debug.Log("Called from " + _playerNumber);
+        GameObject spawnCam;
+        spawnCam = Instantiate(cameraTargetPrefab, new Vector3(0f,0f,0f), transform.rotation);
+        spawnCam.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+        
+    }
+
+    [ClientRpc]
+    public void startCameraClientRpc(){
+        GameObject mainCam;
+        mainCam = GameObject.FindWithTag("MainCamera");
+        
+        GameObject[] cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
+        foreach (GameObject cameraTarget in cameraTargets)
+        {
+            if(cameraTarget.GetComponent<NetworkObject>().IsOwner){
+                mainCam.GetComponent<CameraMovement>().setCameraTarget(cameraTarget.transform);
+                cameraTarget.GetComponent<CameraTarget>().StartCam();
+            }
+        }
+        
+    }
+
+
+
+    
 
 }
