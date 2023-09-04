@@ -14,15 +14,19 @@ public class TurretScript : MonoBehaviour
     public float force;
     private float timer;
     Vector2 Direction;
-    // Start is called before the first frame update
-    void Start()
-    {
-        Debug.Log("Inicio");
+    public float fireRateTimer;
+
+    private GameObject bullethandler;
+
+    void Start () {
+        bullethandler = GameObject.FindWithTag("BulletHandler");
     }
+
+    // Start is called before the first frame update
 
     void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Player")){
-            Debug.Log($"Detected player");
+            //Debug.Log($"Detected player");
             playersIn.Add(other.gameObject);
             UpdateTarget();
             detected = true;
@@ -32,7 +36,7 @@ public class TurretScript : MonoBehaviour
 
     void OnTriggerExit2D(Collider2D other) {
         if (other.CompareTag("Player")){
-            Debug.Log($"Player Out");
+            //Debug.Log($"Player Out");
             playersIn.Remove(other.gameObject);
             UpdateTarget();
         }
@@ -54,17 +58,20 @@ public class TurretScript : MonoBehaviour
     {
         if (detected){
             Direction = Target.transform.position - transform.position;
+            Direction.Normalize();
             canonGun.transform.up = Direction;
             timer += Time.deltaTime;
-            if (timer > 0.5){
+            if (timer > fireRateTimer){
                 timer = 0;
                 shoot();
-                Debug.Log($"Is Shooting");
+                //Debug.Log($"Is Shooting");
             }
         }
     }
 
     void shoot(){
+        //Debug.Log("hanlo");
+        //bullethandler.GetComponent<BulletHandler>().spawnEnemyBulletServerRpc(force, Direction);
         GameObject newBullets = Instantiate(bullets, shootPoint.position, Quaternion.identity);
         newBullets.GetComponent<Rigidbody2D>().AddForce(Direction * force);
     }

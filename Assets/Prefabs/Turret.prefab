@@ -219,7 +219,8 @@ MonoBehaviour:
   canonGun: {fileID: 7383287973357036184}
   bullets: {fileID: 7593462442883062062, guid: bb509a7d5d4c61d44b5c82c900b0658d, type: 3}
   shootPoint: {fileID: 3275233722309896812}
-  force: 100
+  force: 500
+  fireRateTimer: 0.7
 --- !u!58 &5923272950577654911
 CircleCollider2D:
   m_ObjectHideFlags: 0

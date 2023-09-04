@@ -22,8 +22,6 @@ public class PlayerController : NetworkBehaviour
     public int fireRate;
     public int bulletDamage;
 
-
-    public GameObject prefabCrap;
     public GameObject prefabBullet;
     public GameObject prefabFakeBullet;
     public GameObject prefabCheeseBullet;
@@ -68,7 +66,7 @@ public class PlayerController : NetworkBehaviour
         _mainCamera = Camera.main;
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         outline = gameObject.transform.GetChild(0).gameObject;
-        currentHealth = maxHealth;
+        
 
         // Change outline
         colorCodeToPlayer(outline, playerNumber);
@@ -78,6 +76,7 @@ public class PlayerController : NetworkBehaviour
         if (IsOwner) {
             spawnCameraTargetServerRpc(playerNumber);
         }
+
         
 
     }
@@ -112,17 +111,6 @@ public class PlayerController : NetworkBehaviour
             
         }
 
-        if (Input.GetKeyDown("f")){
-            if (IsServer) {
-                GameObject crap;
-                crap = Instantiate(prefabCrap, transform.position, transform.rotation);
-                crap.GetComponent<Renderer>().material.color = Color.red;
-                crap.GetComponent<NetworkObject>().SpawnWithOwnership(playerNumber);
-            } else {
-                Debug.Log("Called");
-                spawnCrapServerRpc();
-            }
-        }
 
         
     }
@@ -148,7 +136,25 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
+    void OnCollisionEnter2D(Collision2D collision)
+    {
+        if (collision.gameObject.tag == "Player" || collision.gameObject.tag == "Dead Player")
+        {
+            Physics2D.IgnoreCollision(collision.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+        }
+    }
+
+    public void Respawn(){
+        currentHealth = maxHealth;
+        StartCoroutine(recordInvulnerabiltyFrames());
+        transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
+        spawnPlayerClientRpc();
+    }
+
     public void GetHit(){
+        if (isInvulnerable) {
+            return;
+        }
         currentHealth -= 1;
         if (currentHealth <= 0) {
             Die();
@@ -160,22 +166,25 @@ public class PlayerController : NetworkBehaviour
     public void Die(){
         transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
         enableControl = false;
+        gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
+        gameObject.tag = "Dead Player";
+        gameObject.GetComponent<Rigidbody2D>().simulated = false;
     }
 
     IEnumerator recordInvulnerabiltyFrames()
     {
+        SpriteRenderer renderer = gameObject.GetComponent<SpriteRenderer>();
+        SpriteRenderer bSquareRenderer = this.gameObject.transform.GetChild(0).GetComponent<SpriteRenderer>();
+        renderer.color = new Color(1f, 1f, 1f, 0.5f);
+        bSquareRenderer.color = new Color(1f, 1f, 1f, 0.5f);
+        //gameObject.GetComponent<SpriteRenderer>()
         isInvulnerable = true;
         yield return new WaitForSeconds(invulnerabilityWindow);
         isInvulnerable = false;
+        renderer.color = new Color(1f, 1f, 1f, 1f);
+        bSquareRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
 
-    [ServerRpc]
-    void spawnCrapServerRpc() {
-        GameObject crap;
-        crap = Instantiate(prefabCrap, transform.position, transform.rotation);
-        crap.GetComponent<Renderer>().material.color = Color.blue;
-        crap.GetComponent<NetworkObject>().Spawn();
-    }
 
     [ServerRpc]
     void spawnBulletServerRpc(float _bulletSpeed, int _bulletDamage, Vector2 _direction, ulong playerNumber) {
@@ -238,12 +247,11 @@ public class PlayerController : NetworkBehaviour
     public void spawnPlayerClientRpc(){
         gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
         enableControl = true;
-        
     }
 
     [ServerRpc(RequireOwnership = false)]
     public void spawnCameraTargetServerRpc(ulong _playerNumber){
-        Debug.Log("Called from " + _playerNumber);
+        //Debug.Log("Called from " + _playerNumber);
         GameObject spawnCam;
         spawnCam = Instantiate(cameraTargetPrefab, new Vector3(0f,0f,0f), transform.rotation);
         spawnCam.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
