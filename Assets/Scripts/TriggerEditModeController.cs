@@ -29,21 +29,21 @@ public class TriggerEditModeController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         // Set overlapping state to true and log the event
-        if(other.CompareTag("Wall")){
+        
             Debug.Log("Triggered by: " + other.gameObject.name);
             float newRed = 255f;
             tempRend.material.color = new Color(newRed, currentColor.g, currentColor.b, currentColor.a);
-        }
+        
         
     }
 
     // Called when another object exits the trigger collider attached to this object
     void OnTriggerExit2D(Collider2D other)
     {
-        if(other.CompareTag("Wall")){
+        
             Debug.Log("No longer triggered by: " + other.gameObject.name);
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
-        }
+        
         // Set overlapping state to false and log the event
     }
 }
