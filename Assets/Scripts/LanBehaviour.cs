@@ -26,6 +26,7 @@ public class LanBehaviour : NetworkBehaviour
 	public void StartHost() {
 		NetworkManager.Singleton.StartHost();
 		GetLocalIPAddress();
+		ipAddressText.text = "Hosted at " + ipAddress.ToString();
 
 	}
 
@@ -47,7 +48,6 @@ public class LanBehaviour : NetworkBehaviour
 		var host = Dns.GetHostEntry(Dns.GetHostName());
 		foreach (var ip in host.AddressList) {
 			if (ip.AddressFamily == AddressFamily.InterNetwork) {
-				ipAddressText.text = ip.ToString();
 				ipAddress = ip.ToString();
 				return ip.ToString();
 			}
