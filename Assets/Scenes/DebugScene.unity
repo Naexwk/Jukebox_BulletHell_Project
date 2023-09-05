@@ -179,6 +179,7 @@ MonoBehaviour:
   quantity: 5
   Clicked: 0
   quantityText: {fileID: 943079036}
+  tempObject: {fileID: 0}
 --- !u!114 &2950853
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -585,6 +586,7 @@ GameObject:
   m_Component:
   - component: {fileID: 183452770}
   - component: {fileID: 183452771}
+  - component: {fileID: 183452772}
   m_Layer: 0
   m_Name: LevelEditorManager
   m_TagString: LevelEditorManager
@@ -624,8 +626,28 @@ MonoBehaviour:
   - {fileID: 2045749384}
   ItemPrefabs:
   - {fileID: 1412632871092107711, guid: 97d6bfc3b58145a4b9e7615edb8b3da3, type: 3}
-  - {fileID: 6970286270433406021, guid: c63dd1b4c06c171469abd91068429703, type: 3}
+  - {fileID: 6815458097064189653, guid: 89b0d7f250b2d7448a3df275932b71fb, type: 3}
   CurrentButtonPressed: 0
+--- !u!114 &183452772
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 183452769}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 1528654613
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1001 &254997395
 PrefabInstance:
   m_ObjectHideFlags: 0
@@ -5134,6 +5156,7 @@ MonoBehaviour:
   quantity: 4
   Clicked: 0
   quantityText: {fileID: 2145248203}
+  tempObject: {fileID: 0}
 --- !u!114 &2045749385
 MonoBehaviour:
   m_ObjectHideFlags: 0

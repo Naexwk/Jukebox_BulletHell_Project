@@ -34,7 +34,13 @@ public class ItemController : MonoBehaviour
             //Instantiates Temp Object (ghost)
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
             //add Trigger script
-            Collider collider = tempObject.GetComponent<Collider>();
+            BoxCollider2D collider = tempObject.GetComponent<BoxCollider2D >();
+            CircleCollider2D circleCollider = tempObject.GetComponent<CircleCollider2D>();
+            // Deactivate the Circle Collider initially
+            if (circleCollider != null)
+            {
+                circleCollider.enabled = false;
+            }
             if(collider != null){
                 collider.isTrigger = true; 
             }
