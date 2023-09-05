@@ -31,7 +31,7 @@ public class ItemController : MonoBehaviour
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
 
             Clicked = true; 
-            //Instantiate Object
+            //Instantiates Temp Object (ghost)
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
             //add Trigger script
             Collider collider = tempObject.GetComponent<Collider>();

@@ -26,7 +26,7 @@ public class TriggerEditModeController : MonoBehaviour
     }
 
     // Called when another object enters the trigger collider attached to this object
-    void OnTriggerEnter2D(Collider2D other)
+    void OnTriggerStay2D(Collider2D other)
     {
         // Set overlapping state to true and log the event
             placeable = false; 
