@@ -1,4 +1,4 @@
-//This script is placed on a  button, the button contains the quantityof an item that can be placed
+// This script is placed on a  button, the button contains the quantityof an item that can be placed
 // each time the button is pressed a 'fake' item is created and then destroyed when it is placed again
 using System.Collections;
 using System.Collections.Generic;
@@ -34,15 +34,15 @@ public class ItemController : MonoBehaviour
             //Instantiates Temp Object (ghost)
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
             //add Trigger script
-            BoxCollider2D collider = tempObject.GetComponent<BoxCollider2D >();
+            BoxCollider2D boxCollider = tempObject.GetComponent<BoxCollider2D >();
             CircleCollider2D circleCollider = tempObject.GetComponent<CircleCollider2D>();
-            // Deactivate the Circle Collider initially
+            // Deactivate the Circle Collider 
             if (circleCollider != null)
             {
                 circleCollider.enabled = false;
             }
-            if(collider != null){
-                collider.isTrigger = true; 
+            if(boxCollider != null){
+                boxCollider.isTrigger = true; 
             }
             TriggerEditModeController triggerEditModeController = tempObject.AddComponent<TriggerEditModeController>();
             //Make the Object Transparent
