@@ -6,7 +6,7 @@ public class LevelEditorManager : MonoBehaviour
 {
     public ItemController[] ItemButtons; 
     public GameObject[] ItemPrefabs;
-    public int CurrentButtonPressed;
+    public int CurrentButtonPressed; //button ID, can be swapped with the ID for the object depending on how we decide to call this
 
     // Update is called once per frame
     void Update()
@@ -14,7 +14,7 @@ public class LevelEditorManager : MonoBehaviour
         Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
 
-        if(Input.GetMouseButtonDown(0) && ItemButtons[CurrentButtonPressed].Clicked){
+        if(Input.GetMouseButtonDown(0) && ItemButtons[CurrentButtonPressed].Clicked && ItemButtons[CurrentButtonPressed].tempObject != null && ItemButtons[CurrentButtonPressed].tempObject.GetComponent<TriggerEditModeController>().placeable){
             ItemButtons[CurrentButtonPressed].Clicked = false; 
             Instantiate(ItemPrefabs[CurrentButtonPressed], new Vector3(worldPosition.x, worldPosition.y, 0), Quaternion.identity);
         }

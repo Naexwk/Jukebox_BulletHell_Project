@@ -13,7 +13,7 @@ public class ItemController : MonoBehaviour
     public bool Clicked  = false; 
     public TextMeshProUGUI quantityText;
     private LevelEditorManager editor; 
-    private GameObject tempObject;
+    public GameObject tempObject;
     private Renderer tempRend;
     // Start is called before the first frame update
     void Start()
@@ -58,7 +58,7 @@ public class ItemController : MonoBehaviour
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
             
             tempObject.transform.position = worldPosition; 
-            if(Input.GetMouseButtonDown(0)){
+            if(Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
                 Destroy(tempObject);
             }
         }

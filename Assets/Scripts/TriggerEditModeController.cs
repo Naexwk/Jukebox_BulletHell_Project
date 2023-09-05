@@ -5,9 +5,9 @@ using UnityEngine;
 
 public class TriggerEditModeController : MonoBehaviour
 {
-    private bool isOverlapping = false; // To keep track of overlapping state
     private Renderer tempRend;
-    private Color currentColor; 
+    private Color currentColor;
+    public bool placeable = true;  
 
     // Start is called before the first frame update
     void Start()
@@ -29,7 +29,7 @@ public class TriggerEditModeController : MonoBehaviour
     void OnTriggerEnter2D(Collider2D other)
     {
         // Set overlapping state to true and log the event
-        
+            placeable = false; 
             Debug.Log("Triggered by: " + other.gameObject.name);
             float newRed = 255f;
             tempRend.material.color = new Color(newRed, currentColor.g, currentColor.b, currentColor.a);
@@ -40,7 +40,7 @@ public class TriggerEditModeController : MonoBehaviour
     // Called when another object exits the trigger collider attached to this object
     void OnTriggerExit2D(Collider2D other)
     {
-        
+            placeable = true; 
             Debug.Log("No longer triggered by: " + other.gameObject.name);
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
         
