@@ -103,7 +103,7 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
-  GlobalObjectIdHash: 951099334
+  GlobalObjectIdHash: 920422861
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
   ActiveSceneSynchronization: 0
@@ -125,6 +125,8 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpeed: 8
   bulletSpeed: 30
+  maxHealth: 6
+  currentHealth: 6
   rig: {fileID: 4779941412160733341}
   playerBullet: {fileID: 7870620376593159761, guid: c63dd1b4c06c171469abd91068429703, type: 3}
   playerNumber: 0
@@ -139,6 +141,7 @@ MonoBehaviour:
   abilityDamage: 10
   enableControl: 0
   cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
+  invulnerabilityWindow: 0
 --- !u!50 &4779941412160733341
 Rigidbody2D:
   serializedVersion: 4

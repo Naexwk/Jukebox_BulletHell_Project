@@ -2,12 +2,15 @@
 using UnityEngine;
 using Unity.Netcode;
 using System;
+using System.Collections;
 
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
 {
     public float playerSpeed;
     public float bulletSpeed;
+    public float maxHealth;
+    public float currentHealth;
     public Rigidbody2D rig;
     public Rigidbody2D playerBullet;
     Vector2 rb;
@@ -36,6 +39,10 @@ public class PlayerController : NetworkBehaviour
 
     specialAbility specAb;
 
+    public float invulnerabilityWindow;
+
+    public bool isInvulnerable;
+
 
 
     // hardcodeado porque unity me odia
@@ -61,6 +68,7 @@ public class PlayerController : NetworkBehaviour
         _mainCamera = Camera.main;
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         outline = gameObject.transform.GetChild(0).gameObject;
+        currentHealth = maxHealth;
 
         // Change outline
         colorCodeToPlayer(outline, playerNumber);
@@ -138,6 +146,27 @@ public class PlayerController : NetworkBehaviour
         } else {
             rig.velocity = new Vector2(xInput * playerSpeed * 0.707f, yInput * playerSpeed* 0.707f);
         }
+    }
+
+    public void GetHit(){
+        currentHealth -= 1;
+        if (currentHealth <= 0) {
+            Die();
+        } else {
+            StartCoroutine(recordInvulnerabiltyFrames());
+        }
+    }
+
+    public void Die(){
+        transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
+        enableControl = false;
+    }
+
+    IEnumerator recordInvulnerabiltyFrames()
+    {
+        isInvulnerable = true;
+        yield return new WaitForSeconds(invulnerabilityWindow);
+        isInvulnerable = false;
     }
 
     [ServerRpc]
