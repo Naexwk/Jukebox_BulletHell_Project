@@ -4,23 +4,11 @@ using UnityEngine;
 
 public class enemyBulletScript : MonoBehaviour
 {
-    // Start is called before the first frame update
-    void Start()
-    {
-        
-    }
-
-    // Update is called once per frame
-    void Update()
-    {
-        
-    }
 
     void OnTriggerEnter2D(Collider2D col) {
         
         if (col.gameObject.tag == "Wall")
         {
-
             Destroy(this.gameObject);
         }
 
