@@ -1,9 +1,10 @@
-//This script is placed ona  button, the button contains the quantityof an item that can be placed
+// This script is placed on a  button, the button contains the quantityof an item that can be placed
 // each time the button is pressed a 'fake' item is created and then destroyed when it is placed again
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using TMPro; 
+using static TriggerEditModeController;
 
 public class ItemController : MonoBehaviour
 {
@@ -12,7 +13,7 @@ public class ItemController : MonoBehaviour
     public bool Clicked  = false; 
     public TextMeshProUGUI quantityText;
     private LevelEditorManager editor; 
-    private GameObject tempObject;
+    public GameObject tempObject;
     private Renderer tempRend;
     // Start is called before the first frame update
     void Start()
@@ -25,30 +26,45 @@ public class ItemController : MonoBehaviour
     public void ButtonClicked() //if the button is clicked
     {
         if(quantity > 0 ){
+            //Get Spawn Position
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
 
             Clicked = true; 
-
+            //Instantiates Temp Object (ghost)
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
+            //add Trigger script
+            BoxCollider2D boxCollider = tempObject.GetComponent<BoxCollider2D >();
+            CircleCollider2D circleCollider = tempObject.GetComponent<CircleCollider2D>();
+            // Deactivate the Circle Collider 
+            if (circleCollider != null)
+            {
+                circleCollider.enabled = false;
+            }
+            if(boxCollider != null){
+                boxCollider.isTrigger = true; 
+            }
+            TriggerEditModeController triggerEditModeController = tempObject.AddComponent<TriggerEditModeController>();
+            //Make the Object Transparent
             tempRend = tempObject.GetComponent<Renderer>();
             Color currentColor = tempRend.material.color; 
             float newAlpha = 0.5f;
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, newAlpha);
 
+            //Change the button
             quantity--;
             quantityText.text = quantity.ToString(); 
             editor.CurrentButtonPressed = ID;
         }
         
     }
-    void Update(){
+    void Update(){ //follows the mouse and destroys the object when ready
         if(tempObject != null){
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
             
             tempObject.transform.position = worldPosition; 
-            if(Input.GetMouseButtonDown(0)){
+            if(Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
                 Destroy(tempObject);
             }
         }
