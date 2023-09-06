@@ -7,32 +7,43 @@ public class MenuManager : MonoBehaviour
     [SerializeField] private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
     private bool PurchasePhaseItems, PurchasePhaseTraps;
 
+    //public GameManager gameManagerInstance;
+
     void Awake(){
-        GameManager.OnGameStateChanged += GameManagerOnOnGameStateChanged;
+        GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
     }
 
     private void Update() {
+        /*if (gameManagerInstance != null) {
+            return;
+        }
+        Debug.Log("MenuManager currently searching...");
+        gameManagerInstance = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+
+        if (gameManagerInstance != null) {
+            gameManagerInstance.OnGameStateChanged += GameManagerOnGameStateChanged;
+        }*/
     }
 
     void OnDestroy() {
-        GameManager.OnGameStateChanged += GameManagerOnOnGameStateChanged;
+        GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
     }
 
     
     public void OnSelectedItems(){
         PurchasePhaseItems = true;
-        GameManagerOnOnGameStateChanged(GameState.PurchasePhase);
+        GameManagerOnGameStateChanged(GameState.PurchasePhase);
         //Codigo de items
   
     }
 
     public void OnSelectedTraps(){
         PurchasePhaseTraps = true;
-        GameManagerOnOnGameStateChanged(GameState.PurchasePhase);
+        GameManagerOnGameStateChanged(GameState.PurchasePhase);
         //Codigo de trampas
     }
-    private void GameManagerOnOnGameStateChanged(GameState state){
-        Debug.Log(state);
+    private void GameManagerOnGameStateChanged(GameState state){
+        Debug.Log("called with state " + state);
         _lanScreen.SetActive(state == GameState.LanConnection);
         _timer.SetActive(state == GameState.StartGame ||state == GameState.Round || state == GameState.PurchasePhase || state == GameState.PurchasePhase);
         _leaderboard.SetActive(state == GameState.Leaderboard );

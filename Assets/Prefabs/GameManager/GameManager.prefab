@@ -13,7 +13,7 @@ GameObject:
   - component: {fileID: -8928019697991546388}
   m_Layer: 0
   m_Name: GameManager
-  m_TagString: Untagged
+  m_TagString: GameManager
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
@@ -46,6 +46,7 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   State: 0
+  GameStarted: 0
   RoundTime: 15
   leaderboardTime: 5
   purchaseTime: 100
@@ -67,7 +68,7 @@ MonoBehaviour:
   GlobalObjectIdHash: 951099334
   AlwaysReplicateAsRoot: 0
   SynchronizeTransform: 1
-  ActiveSceneSynchronization: 0
+  ActiveSceneSynchronization: 1
   SceneMigrationSynchronization: 1
   SpawnWithObservers: 1
   DontDestroyWithOwner: 0

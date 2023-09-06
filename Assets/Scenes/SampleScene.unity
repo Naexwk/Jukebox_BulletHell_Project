@@ -5678,6 +5678,7 @@ GameObject:
   - component: {fileID: 1180958813}
   - component: {fileID: 1180958812}
   - component: {fileID: 1180958811}
+  - component: {fileID: 1180958814}
   m_Layer: 5
   m_Name: btn_play
   m_TagString: PlayButton
@@ -5748,31 +5749,7 @@ MonoBehaviour:
   m_TargetGraphic: {fileID: 1180958812}
   m_OnClick:
     m_PersistentCalls:
-      m_Calls:
-      - m_Target: {fileID: 5143630478923056581, guid: dde1425fff0e7794d880853824aa2608, type: 3}
-        m_TargetAssemblyTypeName: GameManager, Assembly-CSharp
-        m_MethodName: StartGame
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
-      - m_Target: {fileID: 0}
-        m_TargetAssemblyTypeName: CameraTarget, Assembly-CSharp
-        m_MethodName: StartCam
-        m_Mode: 1
-        m_Arguments:
-          m_ObjectArgument: {fileID: 0}
-          m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
-          m_IntArgument: 0
-          m_FloatArgument: 0
-          m_StringArgument: 
-          m_BoolArgument: 0
-        m_CallState: 2
+      m_Calls: []
 --- !u!114 &1180958812
 MonoBehaviour:
   m_ObjectHideFlags: 0
@@ -5811,6 +5788,19 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1180958809}
   m_CullTransparentMesh: 1
+--- !u!114 &1180958814
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1180958809}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 0e7a8818c5ebd254380996e1ebe18917, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  gameManagerInstance: {fileID: 0}
 --- !u!1 &1200308000
 GameObject:
   m_ObjectHideFlags: 0

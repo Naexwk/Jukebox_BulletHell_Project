@@ -13,6 +13,8 @@ public class GameManager : NetworkBehaviour
     public static event Action<GameState> OnGameStateChanged;
     //public NetworkVariable<GameState> NetworkState = new NetworkVariable<GameState>();
     public NetworkVariable<bool> GameStarted = new NetworkVariable<bool>();
+    public bool startHandled = false;
+    //public bool GameStarted = false;
     #endregion
 
     #region Round Manager Variables   
@@ -40,15 +42,21 @@ public class GameManager : NetworkBehaviour
 
         // Modifica las NetworkVariables y realiza otras configuraciones aquí
         GameStarted.Value = false; // Por ejemplo, establece GameStarted en false cuando se inicie el NetworkObject
+        //GameStarted = false;
         UpdateGameState(GameState.LanConnection);
     }
 
     public void Update()
     {
-        Debug.Log(RoundSection);
+        //Debug.Log(RoundSection);
 
-        if(GameStarted.Value){
-            GameManager.Instance.UpdateGameState(GameState.StartGame);
+        if(GameStarted.Value/*GameStarted*/){
+            if(!startHandled){
+                GameManager.Instance.UpdateGameState(GameState.StartGame);
+                startHandled = true;
+            }
+            
+            //GameStarted.Value = false;
         }
 
         if (RoundSection)
@@ -136,19 +144,18 @@ public class GameManager : NetworkBehaviour
     public void StartGame()
     {
     // Verificar si somos el servidor antes de modificar la variable en la red
-    if (IsServer)
-    {
-        GameStarted.Value = true; // Esto solo se ejecutará en el servidor
+        Debug.Log("i am the senate");
+        // GameStarted.Value = true; // Esto solo se ejecutará en el servidor
+        GameStarted.Value = true;
         // Llamar a un RPC para informar a los clientes sobre el cambio
-        InformClientsAboutGameStartServerRPC();
-    }
-        Debug.Log("Clickeaste aqui");
+        //InformClientsAboutGameStartServerRPC();
+        //Debug.Log("Clickeaste aqui");
     }
 
     public void CombatRound()
     {
         GameManager.Instance.UpdateGameState(GameState.Round);
-        Debug.Log("RoundStart");
+        //Debug.Log("RoundStart");
 
 
     }
@@ -206,13 +213,13 @@ public class GameManager : NetworkBehaviour
             return null;
         }
     }
-
+/*
     [ServerRpc]
     private void InformClientsAboutGameStartServerRPC()
     {
     // Este RPC se ejecutará en el servidor y se sincronizará con los clientes
     GameStarted.Value = true;
-    }
+    }*/
 }
 
 
