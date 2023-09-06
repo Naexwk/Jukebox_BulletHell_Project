@@ -31,16 +31,7 @@ public class TurretScript : MonoBehaviour
 
     void OnTriggerEnter2D(Collider2D other) {
         if (other.CompareTag("Player")){
-            //Debug.Log("Detected player, count " + playersIn.Count);
-            /*if (!playersIn.Contains(other.gameObject))
-            {
-                playersIn.Add(other.gameObject);
-            }*/
             playersIn.Add(other.gameObject);
-            
-            //UpdateTarget();
-            //detected = true;
-            //alertLight.GetComponent<SpriteRenderer>().color = Color.red;
         }
     }
 
