@@ -9,6 +9,10 @@ TagManager:
   - EnemyBullet
   - Wall
   - CameraTarget
+  - ItemsButton
+  - TrapsButton
+  - Timer
+  - PlayButton
   layers:
   - Default
   - TransparentFX
