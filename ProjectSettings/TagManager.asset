@@ -14,6 +14,9 @@ TagManager:
   - Timer
   - PlayButton
   - GameManager
+  - Dead Player
+  - BulletHandler
+  - LevelEditorManager
   layers:
   - Default
   - TransparentFX

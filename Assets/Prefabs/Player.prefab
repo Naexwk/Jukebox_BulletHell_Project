@@ -12,6 +12,7 @@ GameObject:
   - component: {fileID: 7334621420652007685}
   - component: {fileID: 4780981171427164661}
   - component: {fileID: 2425302239759592383}
+  - component: {fileID: -6521655923403883417}
   - component: {fileID: 4779941412160733341}
   - component: {fileID: -5188280451714561094}
   - component: {fileID: 1999329160745057875}
@@ -125,12 +126,13 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   playerSpeed: 8
   bulletSpeed: 30
+  maxHealth: 6
+  currentHealth: 6
   rig: {fileID: 4779941412160733341}
   playerBullet: {fileID: 7870620376593159761, guid: c63dd1b4c06c171469abd91068429703, type: 3}
   playerNumber: 0
   fireRate: 3
   bulletDamage: 3
-  prefabCrap: {fileID: 1737276494723737835, guid: c6b171fdb8ab9524998fab9995637e30, type: 3}
   prefabBullet: {fileID: 6970286270433406021, guid: c63dd1b4c06c171469abd91068429703, type: 3}
   prefabFakeBullet: {fileID: 6970286270433406021, guid: 1e7dc713e58ec6a47b916ab00038a056, type: 3}
   prefabCheeseBullet: {fileID: 435019217573329329, guid: cbda9c6cf838ef149b8f1a84d5c269fa, type: 3}
@@ -139,6 +141,20 @@ MonoBehaviour:
   abilityDamage: 10
   enableControl: 0
   cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
+  invulnerabilityWindow: 1.5
+  isInvulnerable: 0
+--- !u!114 &-6521655923403883417
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1810112698189722300}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 7b11b45415f80064a8677d296bb16a1f, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
 --- !u!50 &4779941412160733341
 Rigidbody2D:
   serializedVersion: 4
@@ -183,7 +199,7 @@ MonoBehaviour:
   SyncPositionZ: 0
   SyncRotAngleX: 0
   SyncRotAngleY: 0
-  SyncRotAngleZ: 0
+  SyncRotAngleZ: 1
   SyncScaleX: 0
   SyncScaleY: 0
   SyncScaleZ: 0
