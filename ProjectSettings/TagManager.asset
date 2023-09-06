@@ -11,6 +11,7 @@ TagManager:
   - CameraTarget
   - Dead Player
   - BulletHandler
+  - LevelEditorManager
   layers:
   - Default
   - TransparentFX
