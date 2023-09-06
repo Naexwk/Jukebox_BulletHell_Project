@@ -16,6 +16,10 @@ public class LanBehaviour : NetworkBehaviour
 	[SerializeField] string ipAddress;
 	[SerializeField] UnityTransport transport;
 
+	public GameObject gameManagerObj;
+
+	public GameObject playButton;
+
 	void Start()
 	{
 		ipAddress = "0.0.0.0";
@@ -27,6 +31,7 @@ public class LanBehaviour : NetworkBehaviour
 		NetworkManager.Singleton.StartHost();
 		GetLocalIPAddress();
 		ipAddressText.text = "Hosted at " + ipAddress.ToString();
+		InstantiateGameManager();
 
 	}
 
@@ -63,5 +68,14 @@ public class LanBehaviour : NetworkBehaviour
 		transport.ConnectionData.Address = ipAddress;
 	}
 
-  
+	public void InstantiateGameManager(){
+		GameObject gameManagerPrefab;
+		gameManagerPrefab = Instantiate(gameManagerObj, transform.position,Quaternion.identity);
+		gameManagerPrefab.GetComponent<NetworkObject>().Spawn();
+	}
+
+	public void activatePlayButton(bool _state)
+    {
+        playButton.SetActive(_state);
+    }
 }

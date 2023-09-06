@@ -9,6 +9,11 @@ TagManager:
   - EnemyBullet
   - Wall
   - CameraTarget
+  - ItemsButton
+  - TrapsButton
+  - Timer
+  - PlayButton
+  - GameManager
   - Dead Player
   - BulletHandler
   - LevelEditorManager
