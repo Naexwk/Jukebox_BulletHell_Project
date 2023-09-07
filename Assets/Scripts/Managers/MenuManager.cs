@@ -3,10 +3,12 @@ using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.UI;
 using Unity.Netcode;
+using TMPro;
 
 public class MenuManager : NetworkBehaviour
 {
     [SerializeField] private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
+    [SerializeField] private TMP_Text _vidaText;
     private bool PurchasePhaseItems, PurchasePhaseTraps;  
     private bool purchased = false;
 
@@ -17,10 +19,13 @@ public class MenuManager : NetworkBehaviour
     public GameObject UIHelper;
     public bool loaded = false;
 
+    private PlayerController myPlayerScript;
+
 
     // Suscribirse al cambio de estado del GameManager
     void Awake(){
-        GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
+        
+        GameManager.State.OnValueChanged += GameManagerOnGameStateChanged;
     }
 
     // Encuentra al jugador al que le corresponda este MenuManager
@@ -35,13 +40,11 @@ public class MenuManager : NetworkBehaviour
         _purchaseScreen = UIHelper.GetComponent<UIHelper>().PurchaseUI;
         _purchaseItemsUI = UIHelper.GetComponent<UIHelper>().PurchaseItems;
         _purchaseTrapsUI = UIHelper.GetComponent<UIHelper>().PurchaseTraps;
+        _vidaText = UIHelper.GetComponent<UIHelper>().VidaText.GetComponent<TMP_Text>();
 
         loaded = true;
 
         loadButtonActions();
-
-        //Button button = gameObject.GetComponent<Button>();
-        //button.onClick.AddListener(gameManagerInstance.GetComponent<GameManager>().StartGame);
 
         if (IsOwner) {
             
@@ -49,6 +52,7 @@ public class MenuManager : NetworkBehaviour
             foreach (GameObject player in players) {
                 if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
                     myPlayer = player;
+                    myPlayerScript = player.GetComponent<PlayerController>();
                 }
             }
 
@@ -78,35 +82,25 @@ public class MenuManager : NetworkBehaviour
 
         button = _purchaseItemsUI.transform.GetChild(2).GetComponent<Button>();
         button.onClick.AddListener(() => selectObject(3));
+
+        button = _purchaseTrapsUI.transform.GetChild(0).GetComponent<Button>();
+        button.onClick.AddListener(selectTrap);
+
+        button = _purchaseTrapsUI.transform.GetChild(1).GetComponent<Button>();
+        button.onClick.AddListener(selectTrap);
+
+        button = _purchaseTrapsUI.transform.GetChild(2).GetComponent<Button>();
+        button.onClick.AddListener(selectTrap);
     }
 /*
-    IEnumerator searchForCameraTarget(){
-        Debug.Log("Searching for Camera Targets...");
-        yield return new WaitForSeconds(0.05f);
-        cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-        Debug.Log(cameraTargets.Length);
-        if (cameraTargets.Length == 0) {
-            StartCoroutine(searchForCameraTarget());
-        } else {
-            foreach (GameObject cameraTarget in cameraTargets) {
-                if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                    myCameraTarget = cameraTarget;
-                }
-            }
-            if (myCameraTarget == null) {
-                StartCoroutine(searchForCameraTarget());
-            }
-        }
-    }*/
-
     void OnDestroy() {
-        GameManager.OnGameStateChanged += GameManagerOnGameStateChanged;
-    }
+        GameManager.OnGameStateChanged -= GameManagerOnGameStateChanged;
+    }*/
 
     // Funciones de objetos
     public void OnSelectedItems(){
         PurchasePhaseItems = true;
-        GameManagerOnGameStateChanged(GameState.PurchasePhase);
+        GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
     }
 
     // Añade el objeto al jugador segun su ID
@@ -114,25 +108,41 @@ public class MenuManager : NetworkBehaviour
         if (IsOwner) {
             myPlayer.GetComponent<ItemManager>().addItem(_objectID);
             purchased = true;
-            GameManagerOnGameStateChanged(GameState.PurchasePhase);
+            GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
         }
     }
 
     public void OnSelectedTraps(){
         PurchasePhaseTraps = true;
-        GameManagerOnGameStateChanged(GameState.PurchasePhase);
+        GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
         //Codigo de trampas
     }
-    private void GameManagerOnGameStateChanged(GameState state){
+
+    public void selectTrap(){
+        if (IsOwner) {
+            purchased = true;
+            GameManagerOnGameStateChanged(GameState.PurchasePhase, GameState.PurchasePhase);
+        }
+    }
+
+    void Update (){ 
+        if (IsOwner) {
+            _vidaText.GetComponent<TMP_Text>().text = ("Vida: " + myPlayerScript.currentHealth);
+        }
+        
+    }
+
+
+    private void GameManagerOnGameStateChanged(GameState prev, GameState curr){
         if (!loaded || !IsOwner) {
             return;
         }
-        Debug.Log("Called in state " + state);
-        _lanScreen.SetActive(state == GameState.LanConnection);
-        _timer.SetActive(state == GameState.StartGame ||state == GameState.Round || state == GameState.PurchasePhase || state == GameState.PurchasePhase);
-        _leaderboard.SetActive(state == GameState.Leaderboard );
+        _lanScreen.SetActive(curr == GameState.LanConnection);
+        _timer.SetActive(curr == GameState.StartGame ||curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
+        _leaderboard.SetActive(curr == GameState.Leaderboard);
+        _vidaText.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
 
-        if(state != GameState.Round && state != GameState.StartGame) {
+        if(curr != GameState.Round && curr != GameState.StartGame) {
             if (myPlayer != null) {
                 myPlayer.GetComponent<PlayerController>().Despawn();
             }
@@ -150,7 +160,7 @@ public class MenuManager : NetworkBehaviour
 
         if (PurchasePhaseTraps || PurchasePhaseItems) {
             _purchaseScreen.SetActive(false);
-            if(state == GameState.PurchasePhase){
+            if(curr == GameState.PurchasePhase){
                 if (purchased) {
                     _purchaseItemsUI.SetActive(false);
                     _purchaseTrapsUI.SetActive(false);
@@ -171,7 +181,7 @@ public class MenuManager : NetworkBehaviour
                 purchased = false;
             }
         } else {
-            _purchaseScreen.SetActive(state == GameState.PurchasePhase);
+            _purchaseScreen.SetActive(curr == GameState.PurchasePhase);
         }
     }
 

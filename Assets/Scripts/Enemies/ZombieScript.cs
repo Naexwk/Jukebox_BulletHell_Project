@@ -42,13 +42,18 @@ public class ZombieScript : MonoBehaviour
     }
 
     // Al entrar en contacto con un jugador, dañarlo
-    // Al entrar en contacto con una bala, recibir daño
-    void OnCollisionEnter2D(Collision2D col)
+    void OnCollisionStay2D(Collision2D col)
     {
         if (col.gameObject.tag == "Player")
         {
             col.gameObject.GetComponent<PlayerController>().GetHit();
         }
+
+    }
+
+    // Al entrar en contacto con una bala de queso, recibir daño
+    void OnCollisionEnter2D(Collision2D col)
+    {
 
         // Funciona exclusivamente con la bala de queso porque es la única con Collider, no trigger
         if (col.gameObject.tag == "PlayerBullet")

@@ -49,9 +49,9 @@ MonoBehaviour:
   GameStarted:
     m_InternalValue: 0
   startHandled: 0
-  RoundTime: 30
+  RoundTime: 60
   leaderboardTime: 5
-  purchaseTime: 100
+  purchaseTime: 30
   currentRoundTime: 15
   currentLeaderboardTime: 5
   currentPurchaseTime: 100

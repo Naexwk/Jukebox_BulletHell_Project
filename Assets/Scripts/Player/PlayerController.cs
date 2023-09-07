@@ -24,6 +24,7 @@ public class PlayerController : NetworkBehaviour
     public int abilityDamage;
     public bool isInvulnerable;
     public float invulnerabilityWindow;
+    public int points = 0;
 
     // Variables de personaje
     public string characterCode = "cheeseman";
@@ -255,18 +256,6 @@ public class PlayerController : NetworkBehaviour
 
         // DEV: Move to the Shadow Realm
     }
-
-    
-
-    // Se ejecuta en todos los clientes
-    // Spawnea a los jugadores y les da control
-    /*
-    [ClientRpc]
-    public void spawnPlayerClientRpc(){
-        gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
-        enableControl = true;
-    }*/
-
 
     // Se ejecuta en el servidor
     // Aparece un target que sigue al jugador

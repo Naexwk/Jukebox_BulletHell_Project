@@ -9,8 +9,8 @@ using static TriggerEditModeController;
 public class ItemController : MonoBehaviour
 {
     public int ID;
-    public int quantity;
-    public bool Clicked  = false; 
+    public int quantity = 1;
+    //public bool Clicked  = false; 
     public TextMeshProUGUI quantityText;
     private LevelEditorManager editor; 
     public GameObject tempObject;
@@ -18,20 +18,29 @@ public class ItemController : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-        quantityText.text = quantity.ToString();
-        editor = GameObject.FindGameObjectWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
+        //quantityText.text = quantity.ToString();
+
+        editor = GameObject.FindWithTag("LevelEditorManager").GetComponent<LevelEditorManager>();
+
+    }
+
+    public void setQuantity(int _quantity){
+        quantity = _quantity;
     }
 
     // Update is called once per frame
-    public void ButtonClicked() //if the button is clicked
-    {
+    public void ButtonClicked(int id) //if the button is clicked
+    {   
+        ID = id;
+        Debug.Log("hello " + quantity);
         if(quantity > 0 ){
             //Get Spawn Position
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
 
-            Clicked = true; 
+            //Clicked = true;
             //Instantiates Temp Object (ghost)
+            Debug.Log(editor.ItemPrefabs[ID]);
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
             //add Trigger script
             BoxCollider2D boxCollider = tempObject.GetComponent<BoxCollider2D >();
@@ -50,22 +59,25 @@ public class ItemController : MonoBehaviour
             Color currentColor = tempRend.material.color; 
             float newAlpha = 0.5f;
             tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, newAlpha);
-
+            editor.CurrentButtonPressed = ID;
             //Change the button
             quantity--;
-            quantityText.text = quantity.ToString(); 
-            editor.CurrentButtonPressed = ID;
+            //quantityText.text = quantity.ToString(); 
+            
         }
         
     }
     void Update(){ //follows the mouse and destroys the object when ready
+
         if(tempObject != null){
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
             Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
             
             tempObject.transform.position = worldPosition; 
             if(Input.GetMouseButtonDown(0) && tempObject.GetComponent<TriggerEditModeController>().placeable){
+                editor.spawnEditable();
                 Destroy(tempObject);
+                ButtonClicked(ID);
             }
         }
     }

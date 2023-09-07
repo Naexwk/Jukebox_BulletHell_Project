@@ -10,5 +10,6 @@ public class UIHelper : MonoBehaviour
     public GameObject PurchaseUI;
     public GameObject PurchaseItems;
     public GameObject PurchaseTraps;
+    public GameObject VidaText;
 
 }

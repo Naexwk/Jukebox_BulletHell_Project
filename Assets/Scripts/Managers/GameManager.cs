@@ -9,7 +9,9 @@ public class GameManager : NetworkBehaviour
 {
     #region Game Manager Variables
     public static GameManager Instance;
-    public GameState State;
+    //public GameState State;
+    public static NetworkVariable<GameState> State = new NetworkVariable<GameState>(default, NetworkVariableReadPermission.Everyone);
+
     public static event Action<GameState> OnGameStateChanged;
     public NetworkVariable<bool> GameStarted = new NetworkVariable<bool>();
     public bool startHandled = false;
@@ -18,14 +20,26 @@ public class GameManager : NetworkBehaviour
     #region Round Manager Variables   
     private GameObject[] players;
     private GameObject[] cameraTargets;
-    private bool RoundSection, LeaderboardSection, PurchasePhase;
+
+    public NetworkVariable<bool> RoundSection = new NetworkVariable<bool>();
+    public NetworkVariable<bool> LeaderboardSection = new NetworkVariable<bool>();
+    public NetworkVariable<bool> PurchasePhase = new NetworkVariable<bool>();
+
+    //private bool RoundSection, LeaderboardSection, PurchasePhase;
     public float RoundTime, leaderboardTime, purchaseTime;
-    public float currentRoundTime, currentLeaderboardTime, currentPurchaseTime;
+
+    // Variables de tiempo
+    public NetworkVariable<float> currentRoundTime = new NetworkVariable<float>();
+    public NetworkVariable<float> currentLeaderboardTime = new NetworkVariable<float>();
+    public NetworkVariable<float> currentPurchaseTime = new NetworkVariable<float>();
+
+    
     private TMP_Text timeText;
     #endregion
 
     void Awake() {
         Instance = this;
+        //State = this.State;
     }
      void Start() {
         UpdateGameState(GameState.LanConnection);
@@ -51,55 +65,75 @@ public class GameManager : NetworkBehaviour
             }
         }
 
-        if (RoundSection)
+        if (RoundSection.Value)
         {
+            //Debug.Log("RoundSection.Value!");
             TMP_Text timeText = FindTimerText();
-            currentRoundTime -= Time.deltaTime;
-            timeText.text = (Mathf.Round(currentRoundTime * 10.0f) / 10.0f).ToString();
-            if(currentRoundTime <= 10.1)
+            if (IsOwner) {
+                currentRoundTime.Value -= Time.deltaTime;
+            }
+            timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
+            if(currentRoundTime.Value <= 10.1)
             {
-                timeText.text = Mathf.Round(currentRoundTime ).ToString();
+                timeText.text = Mathf.Round(currentRoundTime.Value ).ToString();
                 timeText.color = Color.red;
                 timeText.fontSize = 70;
 
             }
-            if (currentRoundTime <= 0.5 )
+            if (currentRoundTime.Value <= 0.5 )
             {
                 GameManager.Instance.UpdateGameState(GameState.Leaderboard);
-                RoundSection = false;
+                if (IsOwner) {
+                    RoundSection.Value = false;
+                }
 
             }
         }
-        if (LeaderboardSection)
+        if (LeaderboardSection.Value)
         {
-            currentLeaderboardTime -= Time.deltaTime;
-            if (currentLeaderboardTime <= 0)
+            //Debug.Log("Leaderboard!");
+            if (IsOwner) {
+                currentLeaderboardTime.Value -= Time.deltaTime;
+            }
+            
+            if (currentLeaderboardTime.Value <= 0)
             {
                 GameManager.Instance.UpdateGameState(GameState.PurchasePhase);
-                LeaderboardSection= false;
+                if (IsOwner) {
+                    LeaderboardSection.Value= false;
+                }
+                
             }
         }
 
-        if (PurchasePhase)
+        if (PurchasePhase.Value)
         {
             TMP_Text timeText = FindTimerText();
             //Hacer esta parte bien
             timeText.color = Color.white;
             timeText.fontSize = 50;
             //Hacer esta parte bien
-            currentPurchaseTime -= Time.deltaTime;
-            timeText.text = Mathf.Round(currentPurchaseTime).ToString();
-            if (currentPurchaseTime <= 0)
+            if (IsOwner) {
+                currentPurchaseTime.Value -= Time.deltaTime;
+            }
+            timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+            //Debug.Log(currentPurchaseTime.Value);
+            if (currentPurchaseTime.Value <= 0)
             {
-                PurchasePhase= false;
+                if (IsOwner) {
+                    PurchasePhase.Value = false;
+                }
                 ResetValues();
+                // Llamar al RPC
                 CombatRound();
             }
         }
     }
 
     public void UpdateGameState(GameState newState){
-        State = newState;
+        if (IsOwner) {
+            State.Value = newState;
+        }
         switch(newState){
             case GameState.LanConnection:
                 HandleLanConnection();
@@ -144,34 +178,48 @@ public class GameManager : NetworkBehaviour
     }
 
     private void HandleStartGame(){
-        players = GameObject.FindGameObjectsWithTag("Player");
 
-        foreach (GameObject player in players)
-        {
-            //player.GetComponent<PlayerController>().spawnPlayerClientRpc();
-            player.GetComponent<PlayerController>().startCameraClientRpc();
+        if (IsOwner) {
+            players = GameObject.FindGameObjectsWithTag("Player");
+
+            foreach (GameObject player in players)
+            {
+                //player.GetComponent<PlayerController>().spawnPlayerClientRpc();
+                player.GetComponent<PlayerController>().startCameraClientRpc();
+            }
+            currentRoundTime.Value = RoundTime;
+            currentLeaderboardTime.Value = leaderboardTime;
+            currentPurchaseTime.Value = purchaseTime;
         }
-        currentRoundTime = RoundTime;
-        currentLeaderboardTime = leaderboardTime;
-        currentPurchaseTime = purchaseTime;
-         CombatRound();
+        CombatRound();
     }
     private void HandleRound(){
-        RoundSection = true;
+        if (IsOwner) {
+            RoundSection.Value = true;
+        }
+        
     }
     void HandleLeaderboard(){
-        LeaderboardSection = true;
+        if (IsOwner) {
+            LeaderboardSection.Value = true;
+        }
     }
     #endregion
 
     void HandlePurchasePhase(){
-        PurchasePhase = true;
+        if (IsOwner) {
+            PurchasePhase.Value = true;
+        }
     }
 
     void ResetValues(){
-        currentRoundTime = RoundTime;
-        currentLeaderboardTime = leaderboardTime;
-        currentPurchaseTime = purchaseTime;
+        if (IsOwner) {
+            currentRoundTime.Value = RoundTime;
+            currentLeaderboardTime.Value = leaderboardTime;
+            currentPurchaseTime.Value = purchaseTime;
+        }
+        
+        
     }
 
     public TMP_Text FindTimerText()
@@ -196,6 +244,8 @@ public class GameManager : NetworkBehaviour
             return null;
         }
     }
+
+
 }
 
 
