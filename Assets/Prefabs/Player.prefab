@@ -127,22 +127,19 @@ MonoBehaviour:
   playerSpeed: 8
   bulletSpeed: 30
   maxHealth: 6
-  currentHealth: 6
-  rig: {fileID: 4779941412160733341}
-  playerBullet: {fileID: 7870620376593159761, guid: c63dd1b4c06c171469abd91068429703, type: 3}
-  playerNumber: 0
   fireRate: 3
   bulletDamage: 3
-  prefabBullet: {fileID: 6970286270433406021, guid: c63dd1b4c06c171469abd91068429703, type: 3}
-  prefabFakeBullet: {fileID: 6970286270433406021, guid: 1e7dc713e58ec6a47b916ab00038a056, type: 3}
-  prefabCheeseBullet: {fileID: 435019217573329329, guid: cbda9c6cf838ef149b8f1a84d5c269fa, type: 3}
-  characterCode: cheeseman
+  enableControl: 0
+  currentHealth: 6
   abilityCooldown: 5
   abilityDamage: 10
-  enableControl: 0
-  cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
-  invulnerabilityWindow: 1.5
   isInvulnerable: 0
+  invulnerabilityWindow: 1.5
+  characterCode: cheeseman
+  rig: {fileID: 4779941412160733341}
+  cameraTargetPrefab: {fileID: 2992852506160938039, guid: 11fe1c7413bd4084093215912acee2b0, type: 3}
+  playerNumber: 0
+  prefabMenuManager: {fileID: 5238048039657987364, guid: e3e731cabd4a4c244996bb6826c61670, type: 3}
 --- !u!114 &-6521655923403883417
 MonoBehaviour:
   m_ObjectHideFlags: 0

@@ -17,6 +17,7 @@ TagManager:
   - Dead Player
   - BulletHandler
   - LevelEditorManager
+  - UIHelper
   layers:
   - Default
   - TransparentFX
