@@ -18,6 +18,7 @@ TagManager:
   - BulletHandler
   - LevelEditorManager
   - UIHelper
+  - Spawner
   layers:
   - Default
   - TransparentFX

@@ -152,7 +152,7 @@ public class PlayerController : NetworkBehaviour
         }
 
         animator.SetFloat("Speed", Mathf.Abs(rig.velocity.magnitude));
-    }
+    } 
 
     // Dispara una bala si ya se cumplió el tiempo de espera del firerate.
     private void Shoot(){
@@ -213,6 +213,7 @@ public class PlayerController : NetworkBehaviour
 
     // El jugador cae de lado, y se le quita el control
     public void Die(){
+        animator.SetBool("dead", true);
         transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
         enableControl = false;
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
@@ -253,6 +254,7 @@ public class PlayerController : NetworkBehaviour
     // DEV: Añadir reset de estadísticas
     public void Respawn(){
         ResetStats();
+        animator.SetBool("dead", false);
         GetComponent<ItemManager>().applyItems();
         gameObject.tag = "Player";
         currentHealth = maxHealth;

@@ -25,7 +25,7 @@ public class ZombieSpawner : NetworkBehaviour
         GameManager.State.OnValueChanged -= StateChange;
     }
 
-     private void StateChange(GameState prev, GameState curr){
+    private void StateChange(GameState prev, GameState curr){
         if (curr == GameState.Round || curr == GameState.StartGame) {
             if (hasCoroutines) {
                 StopAllCoroutines();
@@ -51,7 +51,7 @@ public class ZombieSpawner : NetworkBehaviour
 
     // Llamar al server para spawner al zombie en la red
     [ServerRpc(RequireOwnership = false)]
-    void spawnZombieServerRpc(){
+    public void spawnZombieServerRpc(){
         GameObject clone;
         clone = Instantiate(zombiePrefab, transform.position, transform.rotation);
         clone.GetComponent<NetworkObject>().Spawn();
