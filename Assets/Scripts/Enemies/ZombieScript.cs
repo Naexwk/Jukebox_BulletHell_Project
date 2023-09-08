@@ -2,8 +2,9 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using UnityEngine.AI;
+using Unity.Netcode;
 
-public class ZombieScript : MonoBehaviour
+public class ZombieScript : NetworkBehaviour
 {
     public float updateTimer = 1f;
     private Transform target;
@@ -14,6 +15,12 @@ public class ZombieScript : MonoBehaviour
     // Valores iniciales
     void Start()
     {
+        
+    }
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
         health = 5;
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;

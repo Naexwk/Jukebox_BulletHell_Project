@@ -16,7 +16,10 @@ public class ZombieSpawner : NetworkBehaviour
     // Empezar a instanciar zombies
     // DEV: Debería parar si no está en juego (!isInPlay)
 
-    void Awake(){
+
+    public override void OnNetworkSpawn()
+    {
+        base.OnNetworkSpawn();
         GameManager.State.OnValueChanged += StateChange;
     }
 

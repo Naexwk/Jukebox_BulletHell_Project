@@ -219,6 +219,7 @@ public class PlayerController : NetworkBehaviour
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.tag = "Dead Player";
         gameObject.GetComponent<Rigidbody2D>().simulated = false;
+        changeDeadStateServerRpc(true, playerNumber);
     }
 
     // Se miden unos segundos igual a invulnerabilityWindow,
@@ -259,6 +260,7 @@ public class PlayerController : NetworkBehaviour
         gameObject.tag = "Player";
         currentHealth = maxHealth;
         enableControl = true;
+        changeDeadStateServerRpc(false, playerNumber);
         StartCoroutine(recordInvulnerabiltyFrames());
         transform.rotation = Quaternion.Euler(new Vector3(0,0,0));
         gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
@@ -323,6 +325,39 @@ public class PlayerController : NetworkBehaviour
         GameObject spawnMM;
         spawnMM = Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
         spawnMM.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
+        
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void changeDeadStateServerRpc(bool isDead, ulong _playerNumber){
+        Debug.Log("Called from " + _playerNumber + " with IsDead = " + isDead);
+        GameObject[] players;
+        GameObject[] deadplayers;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        foreach (GameObject player in players) {
+            if (player.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+                if (isDead) {
+                    Debug.Log("Changed player " + _playerNumber + " tag to Dead Player");
+                    player.tag = "Dead Player";
+                } else {
+                    Debug.Log("Changed player " + _playerNumber + " tag to Player");
+                    player.tag = "Player";
+                }
+            }
+        }
+
+        foreach (GameObject deadplayer in deadplayers) {
+            if (deadplayer.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+                if (isDead) {
+                    Debug.Log("Changed player " + _playerNumber + " tag to Dead Player");
+                    deadplayer.tag = "Dead Player";
+                } else {
+                    Debug.Log("Changed player " + _playerNumber + " tag to Player");
+                    deadplayer.tag = "Player";
+                }
+            }
+        }
         
     }
 
