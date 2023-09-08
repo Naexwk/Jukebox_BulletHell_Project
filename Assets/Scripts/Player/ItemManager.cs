@@ -13,7 +13,7 @@ public class ItemManager : MonoBehaviour
     // Aplicar los efectos de todos los items del jugador
     // Las estadísticas del jugador deberían resetearse
     // y los objetos deberían aplicarse cada ronda.
-    void applyItems () {
+    public void applyItems () {
         for (int i = 0; i <= obtainedItemsNumber; i++) {
             itemInventory[i]();
         }

@@ -11,23 +11,46 @@ public class ZombieSpawner : NetworkBehaviour
     public GameObject zombiePrefab;
     public float timeToSpawn;
 
+    private bool hasCoroutines = false;
+
     // Empezar a instanciar zombies
     // DEV: Debería parar si no está en juego (!isInPlay)
-    void Start()
-    {
-        StartCoroutine(spawnZombie());
+
+    void Awake(){
+        GameManager.State.OnValueChanged += StateChange;
     }
 
+    public override void OnDestroy()
+    {
+        GameManager.State.OnValueChanged -= StateChange;
+    }
+
+     private void StateChange(GameState prev, GameState curr){
+        if (curr == GameState.Round || curr == GameState.StartGame) {
+            if (hasCoroutines) {
+                StopAllCoroutines();
+                hasCoroutines = false;
+            }
+            StartCoroutine(spawnZombie());
+            GetComponent<Rigidbody2D>().simulated = false;
+        } else {
+            if (hasCoroutines) {
+                StopAllCoroutines();
+                hasCoroutines = false;
+            }
+        }
+    }
 
     // Aparecer un zombie cada timeToSpawn segundos
     IEnumerator spawnZombie() {
+        hasCoroutines = true;
         yield return new WaitForSeconds(timeToSpawn);
         spawnZombieServerRpc();
         StartCoroutine(spawnZombie());
     }
 
     // Llamar al server para spawner al zombie en la red
-    [ServerRpc]
+    [ServerRpc(RequireOwnership = false)]
     void spawnZombieServerRpc(){
         GameObject clone;
         clone = Instantiate(zombiePrefab, transform.position, transform.rotation);

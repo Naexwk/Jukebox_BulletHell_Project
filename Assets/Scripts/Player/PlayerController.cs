@@ -8,10 +8,18 @@ delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
 {
 
-    // Estadísticas de jugador
+
+    // Estadísticas del personaje
+    private float char_playerSpeed = 8f;
+    private float char_bulletSpeed = 30f;
+    private int char_maxHealth = 6;
+    private int char_fireRate = 3; // en disparos por segundo
+    private int char_bulletDamage = 3;
+
+    // Estadísticas de jugador actuales
     public float playerSpeed;
     public float bulletSpeed;
-    public float maxHealth;
+    public int maxHealth;
     public int fireRate; // en disparos por segundo
     public int bulletDamage;
 
@@ -222,6 +230,10 @@ public class PlayerController : NetworkBehaviour
         bSquareRenderer.color = new Color(1f, 1f, 1f, 1f);
     }
 
+    public void givePoints(int _points){
+        points += _points;
+    }
+
 
     // Ignora las colisiones con otros jugadores
     void OnCollisionEnter2D(Collision2D collision)
@@ -235,6 +247,8 @@ public class PlayerController : NetworkBehaviour
     // Función para respawnear al jugador
     // DEV: Añadir reset de estadísticas
     public void Respawn(){
+        ResetStats();
+        GetComponent<ItemManager>().applyItems();
         gameObject.tag = "Player";
         currentHealth = maxHealth;
         enableControl = true;
@@ -244,6 +258,15 @@ public class PlayerController : NetworkBehaviour
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.GetComponent<Rigidbody2D>().simulated = true;
         //spawnPlayerClientRpc();
+    }
+
+    // Función que reinicia las stats del jugador (para aplicar los items)
+    public void ResetStats(){
+        playerSpeed = char_playerSpeed;
+        bulletSpeed = char_bulletSpeed;
+        maxHealth = char_maxHealth;
+        fireRate = char_fireRate;
+        bulletDamage = char_bulletDamage;
     }
 
     // Función para Despawnear

@@ -13,8 +13,7 @@ public class LevelEditorManager : NetworkBehaviour
     public void spawnEditable(){
         Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
         Vector2 worldPosition = Camera.main.ScreenToWorldPoint(screenPosition);
-        // checks whetther object can be placed and spawns it them 
-        Debug.Log(itemController.tempObject != null);
+        // checks whetther object can be placed and spawns it them
         if(itemController.tempObject != null){
             EditModeSpawnerServerRpc(worldPosition.x, worldPosition.y, CurrentButtonPressed);
         }

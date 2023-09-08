@@ -33,13 +33,23 @@ public class GameManager : NetworkBehaviour
     public NetworkVariable<float> currentLeaderboardTime = new NetworkVariable<float>();
     public NetworkVariable<float> currentPurchaseTime = new NetworkVariable<float>();
 
-    
     private TMP_Text timeText;
+
+    public static NetworkVariable<int> roundNumber = new NetworkVariable<int>();
+    public static NetworkVariable<int> maxRounds = new NetworkVariable<int>();
+
     #endregion
 
+    // Variables de rondas
+    
+    //public static NetworkVariable<int[]> localPoints = new NetworkVariable<int[]>();
+    //private int[] startPointArray = {0,0,0,0};
+    
+    
     void Awake() {
         Instance = this;
         //State = this.State;
+        
     }
      void Start() {
         UpdateGameState(GameState.LanConnection);
@@ -48,12 +58,30 @@ public class GameManager : NetworkBehaviour
     
     public override void OnNetworkSpawn()
     {
+        
         base.OnNetworkSpawn();
-
         // Modifica las NetworkVariables y realiza otras configuraciones aquí
         GameStarted.Value = false; // Por ejemplo, establece GameStarted en false cuando se inicie el NetworkObject
         UpdateGameState(GameState.LanConnection);
+        maxRounds.Value = 5;
+        roundNumber.Value = 1;
     }
+/*
+    private void updateScores(){
+        Debug.Log("updating scores...");
+        players = GameObject.FindGameObjectsWithTag("Player");
+        if (players != null) {
+            int givenPoints;
+            int intPlayerNumber;
+            givenPoints = roundPoints[roundNumber.Value-1]/players.Length;
+            foreach (GameObject player in players) {
+                player.GetComponent<PlayerController>().givePoints(givenPoints);
+                intPlayerNumber = Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber.ToString());
+                localPoints[intPlayerNumber] += givenPoints;
+            }
+        }
+    }
+*/
 
     public void Update()
     {
@@ -202,6 +230,7 @@ public class GameManager : NetworkBehaviour
     void HandleLeaderboard(){
         if (IsOwner) {
             LeaderboardSection.Value = true;
+            //updateScores();
         }
     }
     #endregion

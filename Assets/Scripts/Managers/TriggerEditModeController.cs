@@ -21,7 +21,7 @@ public class TriggerEditModeController : MonoBehaviour
     // While the ghost editable stays inside a box collider it truns its color red and makes it unplaceable
     void OnTriggerStay2D(Collider2D other)
     {
-        Debug.Log("THE TYPE IS" + other.GetType() + "Triggered by: " + other.gameObject.name);
+        //Debug.Log("THE TYPE IS" + other.GetType() + "Triggered by: " + other.gameObject.name);
         if (other is BoxCollider2D )
         {
             placeable = false; 
@@ -36,7 +36,7 @@ public class TriggerEditModeController : MonoBehaviour
     void OnTriggerExit2D(Collider2D other)
     {
         placeable = true; 
-        Debug.Log("No longer triggered by: " + other.gameObject.name);
+        //Debug.Log("No longer triggered by: " + other.gameObject.name);
         tempRend.material.color = new Color(currentColor.r, currentColor.g, currentColor.b, currentColor.a);
     }
 }

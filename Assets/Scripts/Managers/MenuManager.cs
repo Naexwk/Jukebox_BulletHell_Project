@@ -140,6 +140,9 @@ public class MenuManager : NetworkBehaviour
         _lanScreen.SetActive(curr == GameState.LanConnection);
         _timer.SetActive(curr == GameState.StartGame ||curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
         _leaderboard.SetActive(curr == GameState.Leaderboard);
+        if (curr == GameState.Leaderboard) {
+            _leaderboard.GetComponent<Leaderboard>().distributePoints();
+        }
         _vidaText.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
 
         if(curr != GameState.Round && curr != GameState.StartGame) {

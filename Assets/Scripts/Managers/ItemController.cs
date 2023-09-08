@@ -32,7 +32,6 @@ public class ItemController : MonoBehaviour
     public void ButtonClicked(int id) //if the button is clicked
     {   
         ID = id;
-        Debug.Log("hello " + quantity);
         if(quantity > 0 ){
             //Get Spawn Position
             Vector2 screenPosition = new Vector2(Input.mousePosition.x, Input.mousePosition.y);
@@ -40,7 +39,6 @@ public class ItemController : MonoBehaviour
 
             //Clicked = true;
             //Instantiates Temp Object (ghost)
-            Debug.Log(editor.ItemPrefabs[ID]);
             tempObject = Instantiate(editor.ItemPrefabs[ID], new Vector3(worldPosition.x, worldPosition.y,0), Quaternion.identity);
             //add Trigger script
             BoxCollider2D boxCollider = tempObject.GetComponent<BoxCollider2D >();
