@@ -15,6 +15,9 @@ public class PlayerController : NetworkBehaviour
     public int fireRate; // en disparos por segundo
     public int bulletDamage;
 
+    //Animacion
+    public Animator animator;
+
     // Variables de control
     public bool enableControl = false;
     public float currentHealth;
@@ -138,6 +141,8 @@ public class PlayerController : NetworkBehaviour
         } else {
             rig.velocity = new Vector2(xInput * playerSpeed * 0.707f, yInput * playerSpeed* 0.707f);
         }
+
+        animator.SetFloat("Speed", Mathf.Abs(rig.velocity.magnitude));
     }
 
     // Dispara una bala si ya se cumplió el tiempo de espera del firerate.
