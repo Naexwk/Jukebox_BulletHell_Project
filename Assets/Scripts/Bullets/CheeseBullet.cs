@@ -6,6 +6,7 @@ public class CheeseBullet : MonoBehaviour
 {
     public int bulletDamage = 3;
     private GameObject[] players;
+    public Rigidbody2D rb;
 
     // Variable que determina si la bala es server-side o client-side
     public bool isFake;
@@ -13,12 +14,15 @@ public class CheeseBullet : MonoBehaviour
     // Ignorar colisiones con jugadores
     void Start()
     {
+        rb = GetComponent<Rigidbody2D>();
         players = GameObject.FindGameObjectsWithTag("Player");
 
         foreach (GameObject player in players)
         {
             Physics2D.IgnoreCollision(player.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
         }
+
+        rb.AddTorque((750f * Mathf.Deg2Rad) * rb.inertia, ForceMode2D.Impulse);
 
         StartCoroutine(selfDestruct());
     }

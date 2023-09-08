@@ -21,7 +21,11 @@ public class LevelEditorManager : NetworkBehaviour
 
     [ServerRpc (RequireOwnership=false)] //thus functions instatie the objects in the netwrk depending on wether the user is clien or host
     void EditModeSpawnerServerRpc(float x, float y, int index){
-        Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
+        GameObject spawnedObject;
+        spawnedObject = Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
+        if (spawnedObject.tag == "Spawner") {
+            spawnedObject.GetComponent<NetworkObject>().Spawn();
+        }
         EditModeSpawnerClientRpc(x, y, index);
     }
 

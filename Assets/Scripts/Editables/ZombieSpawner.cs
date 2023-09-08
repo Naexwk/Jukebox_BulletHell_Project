@@ -38,6 +38,7 @@ public class ZombieSpawner : NetworkBehaviour
                 StopAllCoroutines();
                 hasCoroutines = false;
             }
+            GetComponent<Rigidbody2D>().simulated = false;
         }
     }
 
