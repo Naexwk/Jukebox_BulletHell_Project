@@ -8,6 +8,17 @@ TagManager:
   - Enemy
   - EnemyBullet
   - Wall
+  - CameraTarget
+  - ItemsButton
+  - TrapsButton
+  - Timer
+  - PlayButton
+  - GameManager
+  - Dead Player
+  - BulletHandler
+  - LevelEditorManager
+  - UIHelper
+  - Spawner
   layers:
   - Default
   - TransparentFX
