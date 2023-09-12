@@ -330,7 +330,7 @@ public class PlayerController : NetworkBehaviour
 
     [ServerRpc(RequireOwnership = false)]
     public void changeDeadStateServerRpc(bool isDead, ulong _playerNumber){
-        Debug.Log("Called from " + _playerNumber + " with IsDead = " + isDead);
+        //Debug.Log("Called from " + _playerNumber + " with IsDead = " + isDead);
         GameObject[] players;
         GameObject[] deadplayers;
         players = GameObject.FindGameObjectsWithTag("Player");
