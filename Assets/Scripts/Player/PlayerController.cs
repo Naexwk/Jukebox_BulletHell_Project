@@ -207,14 +207,16 @@ public class PlayerController : NetworkBehaviour
         if (currentHealth <= 0) {
             Die();
         } else {
+            animator.SetBool("takeDamage", true);
             StartCoroutine(recordInvulnerabiltyFrames());
+            StartCoroutine(recordAnimatorHitFrames());
         }
     }
 
     // El jugador cae de lado, y se le quita el control
     public void Die(){
         animator.SetBool("dead", true);
-        transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
+        //transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
         enableControl = false;
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.tag = "Dead Player";
@@ -235,6 +237,12 @@ public class PlayerController : NetworkBehaviour
         isInvulnerable = false;
         renderer.color = new Color(1f, 1f, 1f, 1f);
         bSquareRenderer.color = new Color(1f, 1f, 1f, 1f);
+    }
+
+    IEnumerator recordAnimatorHitFrames()
+    {
+        yield return new WaitForSeconds(0.16f);
+        animator.SetBool("takeDamage", false);
     }
 
     public void givePoints(int _points){
