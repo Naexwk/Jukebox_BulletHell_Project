@@ -55,7 +55,6 @@ public class ZombieScript : NetworkBehaviour
         {
             col.gameObject.GetComponent<PlayerController>().GetHit();
         }
-
     }
 
     // Al entrar en contacto con una bala de queso, recibir daño
