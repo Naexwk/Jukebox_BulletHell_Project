@@ -145,6 +145,8 @@ public class PlayerController : NetworkBehaviour
         float xInput = Input.GetAxisRaw("Horizontal");
         float yInput = Input.GetAxisRaw("Vertical");
 
+        Debug.Log("X: " + xInput + " - Y: " + yInput);
+
         if (xInput == 0 || yInput == 0) {
             rig.velocity = new Vector2(xInput * playerSpeed, yInput * playerSpeed);
         } else {
@@ -197,6 +199,10 @@ public class PlayerController : NetworkBehaviour
 
     // Función pública para hacer daño al jugador
     public void GetHit(){
+        if (!IsOwner) {
+            return;
+        }
+
         // Si es invulnerable, ignorar
         if (isInvulnerable) {
             return;
