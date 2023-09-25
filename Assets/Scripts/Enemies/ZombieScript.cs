@@ -10,7 +10,9 @@ public class ZombieScript : NetworkBehaviour
     private Transform target;
     private NavMeshAgent agent;
 
-    public int health;
+    public NetworkVariable<int> health = new NetworkVariable<int>();
+
+    //public int health;
 
     // Valores iniciales
     void Start()
@@ -21,7 +23,7 @@ public class ZombieScript : NetworkBehaviour
     public override void OnNetworkSpawn()
     {
         base.OnNetworkSpawn();
-        health = 5;
+        health.Value = 5;
         agent = GetComponent<NavMeshAgent>();
         agent.updateRotation = false;
         agent.updateUpAxis = false;
@@ -41,10 +43,7 @@ public class ZombieScript : NetworkBehaviour
     {
         if (col.gameObject.tag == "PlayerBullet")
         {
-            health -= col.gameObject.GetComponent<PlayerBullet>().bulletDamage;
-            if (health <= 0) {
-                Destroy(this.gameObject);
-            }
+            ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage);
         }
     }
 
@@ -64,30 +63,38 @@ public class ZombieScript : NetworkBehaviour
         // Funciona exclusivamente con la bala de queso porque es la única con Collider, no trigger
         if (col.gameObject.tag == "PlayerBullet")
         {
-            health -= col.gameObject.GetComponent<CheeseBullet>().bulletDamage;
-            if (health <= 0) {
-                Destroy(this.gameObject);
-            }
+            ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
         }
     }
     
     // Buscar al jugador más cercano
     void FindPlayer()
     {
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
-        // Si no hay jugadores, no moverse
-        if (players.Length == 0) {
-            target = transform;
-        } else {
-            float closestDistance = Mathf.Infinity;
-            foreach(GameObject p in players){
-                float distance = Vector2.Distance(transform.position, p.transform.position);
-                if (distance < closestDistance){
-                    closestDistance = distance;
-                    target = p.transform;
+        if (IsOwner) {
+            GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+            // Si no hay jugadores, no moverse
+            if (players.Length == 0) {
+                target = transform;
+            } else {
+                float closestDistance = Mathf.Infinity;
+                foreach(GameObject p in players){
+                    float distance = Vector2.Distance(transform.position, p.transform.position);
+                    if (distance < closestDistance){
+                        closestDistance = distance;
+                        target = p.transform;
+                    }
                 }
             }
         }
         
+        
+    }
+
+    [ServerRpc(RequireOwnership = false)]
+    public void ZombieGetHitServerRpc(int damage) {
+        health.Value -= damage;
+        if (health.Value <= 0) {
+            Destroy(this.gameObject);
+        }
     }
 }

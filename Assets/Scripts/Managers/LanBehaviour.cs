@@ -38,8 +38,8 @@ public class LanBehaviour : NetworkBehaviour
 	public void StartClient() {
 		// Obtiene la IP local y se une al juego con esa IP
 		// Esto debe cambiar a conseguir la IP del campo de texto
-		// ipAddress = GetLocalIPAddress(); 
-		ipAddress = ip.text;
+		ipAddress = GetLocalIPAddress(); 
+		//ipAddress = ip.text;
 		SetIpAddress();
 		NetworkManager.Singleton.StartClient();
 

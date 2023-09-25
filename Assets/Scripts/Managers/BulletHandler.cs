@@ -19,6 +19,19 @@ public class BulletHandler : NetworkBehaviour
     // Prefab de bala de queso
     public GameObject prefabCheeseBullet;
 
+    private GameObject[] players;
+        
+
+    void Start(){
+        GameManager.State.OnValueChanged += StateChange;
+    }
+
+    private void StateChange(GameState prev, GameState curr){
+        if (curr == GameState.Round || curr == GameState.StartGame) {
+            players = GameObject.FindGameObjectsWithTag("Player");
+        }
+    }
+
     // Función para colorear objetos según el número del jugador
     void colorCodeToPlayer (GameObject go, ulong playerNumber) {
         if (playerNumber == 0) {
@@ -56,29 +69,47 @@ public class BulletHandler : NetworkBehaviour
 
     // Llamada al server para crear una bala de jugador server-side
     [ServerRpc(RequireOwnership = false)]
-    public void spawnBulletServerRpc(float _bulletSpeed, int _bulletDamage, Vector2 _direction, ulong playerNumber, float _x, float _y) {
-        GameObject clone;
+    public void spawnBulletServerRpc(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y) {
+
+        //Debug.Log("Called from " + playerNumber);
+        /*GameObject clone;
         clone = Instantiate(prefabBullet, new Vector3 (_x, _y, 0f), transform.rotation);
         clone.GetComponent<PlayerBullet>().bulletDamage = _bulletDamage;
         clone.GetComponent<PlayerBullet>().bulletSpeed = _bulletSpeed;
         clone.GetComponent<PlayerBullet>().bulletDirection = _direction;
         clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
-        colorCodeToPlayer(clone, playerNumber);
-        spawnFakeBulletsClientRPC(_bulletSpeed, _direction, playerNumber, _x, _y);
+        colorCodeToPlayer(clone, playerNumber);*/
+        
+        /*ulong[] targetClients;
+
+        List<ulong> listTargetClients = new List<ulong>{};
+
+        foreach (GameObject player in players) {
+            if (player.GetComponent<PlayerController>().playerNumber != _playerNumber) {
+                listTargetClients.Add(player.GetComponent<PlayerController>().playerNumber);
+            }
+        }
+
+        spawnFakeBulletsClientRPC(_bulletSpeed, _direction, _playerNumber, _x, _y/*, clientRpcParams);*/
+        
+        /*foreach (GameObject player in players) {
+            player.gameObject.GetComponent<PlayerController>().spawnFakeBullet( _bulletSpeed,  _direction,  playerNumber,  _x,  _y);
+        }*/
+
+        spawnFakeBulletsClientRPC(_bulletSpeed, _direction, _playerNumber, _x, _y);
     }
 
     // Llamada a todos los clientes para clonar la bala de jugador (falsa)
     [ClientRpc]
-    void spawnFakeBulletsClientRPC(float _bulletSpeed, Vector2 _direction, ulong playerNumber, float _x, float _y){
-
-        if (!IsServer){
-            GameObject clone;
-            clone = Instantiate(prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
-            clone.GetComponent<FakePlayerBullet>().bulletSpeed = _bulletSpeed;
-            clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
-            colorCodeToPlayer(clone, playerNumber);
+    void spawnFakeBulletsClientRPC(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y/*, ClientRpcParams clientRpcParams = default*/){
+        foreach (GameObject player in players) {
+            player.gameObject.GetComponent<PlayerController>().spawnFakeBullet( _bulletSpeed,  _direction,  _playerNumber,  _x,  _y);
         }
-        
+        /*GameObject clone;
+        clone = Instantiate(prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
+        clone.GetComponent<FakePlayerBullet>().bulletSpeed = _bulletSpeed;
+        clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
+        colorCodeToPlayer(clone, _playerNumber);*/
     }
 
     // Llamada al server para crear una bala de queso

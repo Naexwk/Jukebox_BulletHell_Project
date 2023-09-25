@@ -145,7 +145,7 @@ public class PlayerController : NetworkBehaviour
         float xInput = Input.GetAxisRaw("Horizontal");
         float yInput = Input.GetAxisRaw("Vertical");
 
-        Debug.Log("X: " + xInput + " - Y: " + yInput);
+        //Debug.Log("X: " + xInput + " - Y: " + yInput);
 
         if (xInput == 0 || yInput == 0) {
             rig.velocity = new Vector2(xInput * playerSpeed, yInput * playerSpeed);
@@ -162,8 +162,16 @@ public class PlayerController : NetworkBehaviour
             Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = worldMousePos - transform.position;
             direction.Normalize();
-            bullethandler.GetComponent<BulletHandler>().spawnBulletServerRpc(bulletSpeed, bulletDamage, direction, playerNumber, transform.position.x, transform.position.y);
+            bullethandler.GetComponent<BulletHandler>().spawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
             timeSinceLastFire = Time.time;
+
+            GameObject clone;
+            clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabBullet, transform.position, transform.rotation);
+            clone.GetComponent<PlayerBullet>().bulletDamage = bulletDamage;
+            clone.GetComponent<PlayerBullet>().bulletSpeed = bulletSpeed;
+            clone.GetComponent<PlayerBullet>().bulletDirection = direction;
+            clone.GetComponent<Rigidbody2D>().velocity = (direction) * (bulletSpeed);
+            colorCodeToPlayer(clone, playerNumber);
         }
     }
 
@@ -305,6 +313,16 @@ public class PlayerController : NetworkBehaviour
         enableControl = false;
 
         // DEV: Move to the Shadow Realm
+    }
+
+    public void spawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
+        if (IsOwner && playerNumber != _playerNumber) {
+            GameObject clone;
+            clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
+            clone.GetComponent<FakePlayerBullet>().bulletSpeed = _bulletSpeed;
+            clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
+            colorCodeToPlayer(clone, _playerNumber);
+        }
     }
 
     // Se ejecuta en el servidor
