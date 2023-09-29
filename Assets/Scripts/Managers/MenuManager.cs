@@ -9,6 +9,7 @@ public class MenuManager : NetworkBehaviour
 {
     [SerializeField] private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
     [SerializeField] private TMP_Text _vidaText;
+    [SerializeField] private GameObject _winScreen;
     private bool PurchasePhaseItems, PurchasePhaseTraps;  
     private bool purchased = false;
 
@@ -26,6 +27,7 @@ public class MenuManager : NetworkBehaviour
     void Awake(){
         
         GameManager.State.OnValueChanged += GameManagerOnGameStateChanged;
+        GameManager.handleLeaderboard.OnValueChanged += updateLeaderboard;
     }
 
     // Encuentra al jugador al que le corresponda este MenuManager
@@ -41,6 +43,7 @@ public class MenuManager : NetworkBehaviour
         _purchaseItemsUI = UIHelper.GetComponent<UIHelper>().PurchaseItems;
         _purchaseTrapsUI = UIHelper.GetComponent<UIHelper>().PurchaseTraps;
         _vidaText = UIHelper.GetComponent<UIHelper>().VidaText.GetComponent<TMP_Text>();
+        _winScreen = UIHelper.GetComponent<UIHelper>().winScreen;
 
         loaded = true;
 
@@ -140,9 +143,10 @@ public class MenuManager : NetworkBehaviour
         _lanScreen.SetActive(curr == GameState.LanConnection);
         _timer.SetActive(curr == GameState.StartGame ||curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
         _leaderboard.SetActive(curr == GameState.Leaderboard);
-        if (curr == GameState.Leaderboard) {
+        _winScreen.SetActive(curr == GameState.WinScreen);
+        /*if (curr == GameState.Leaderboard) {
             _leaderboard.GetComponent<Leaderboard>().distributePoints();
-        }
+        }*/
         _vidaText.gameObject.SetActive(curr == GameState.Round || curr == GameState.StartGame);
 
         if(curr != GameState.Round && curr != GameState.StartGame) {
@@ -185,6 +189,13 @@ public class MenuManager : NetworkBehaviour
             }
         } else {
             _purchaseScreen.SetActive(curr == GameState.PurchasePhase);
+        }
+    }
+
+
+    private void updateLeaderboard(bool prev, bool curr){
+        if(_leaderboard.activeSelf){
+            _leaderboard.GetComponent<Leaderboard>().updateLeaderboard(true, true);
         }
     }
 
