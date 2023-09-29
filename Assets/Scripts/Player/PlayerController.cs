@@ -402,7 +402,7 @@ public class PlayerController : NetworkBehaviour
         }
         GameObject[] players;
         players = GameObject.FindGameObjectsWithTag("Player");
-        Debug.Log(players.Length);
+        //Debug.Log(players.Length);
         foreach (GameObject player in players) {
             player.gameObject.GetComponent<Animator>().SetBool("dead", false);
             gameObject.GetComponent<Rigidbody2D>().simulated = true;
