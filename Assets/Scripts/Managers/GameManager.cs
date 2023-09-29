@@ -175,9 +175,14 @@ public class GameManager : NetworkBehaviour
                 currentLeaderboardTime.Value -= Time.deltaTime;
             }
             
-            if (currentLeaderboardTime.Value <= 0)
+            if (currentLeaderboardTime.Value <= 1)
             {
-                GameManager.Instance.UpdateGameState(GameState.PurchasePhase);
+                currentRound++;
+                if (currentRound > maxRounds) {
+                    GameManager.Instance.UpdateGameState(GameState.WinScreen);
+                } else {
+                    GameManager.Instance.UpdateGameState(GameState.PurchasePhase);
+                }
                 if (IsOwner) {
                     LeaderboardSection.Value= false;
                 }
@@ -251,20 +256,21 @@ public class GameManager : NetworkBehaviour
         playerPoints = new int[numberOfPlayers];
         helper = new int[numberOfPlayers];
         playerLeaderboard = new int[numberOfPlayers];
-        currentRound = 0;
+        currentRound = 1;
         //Debug.Log(playerPoints.Length);
         GameStarted.Value = true;
     }
 
     public void CombatRound()
     {
-        currentRound++;
+        /*currentRound++;
         if (currentRound > maxRounds) {
             GameManager.Instance.UpdateGameState(GameState.WinScreen);
         } else {
             GameManager.Instance.UpdateGameState(GameState.Round);
-        }
-        
+        }*/
+
+        GameManager.Instance.UpdateGameState(GameState.Round);
     }
 
     private void HandleStartGame(){
@@ -286,6 +292,7 @@ public class GameManager : NetworkBehaviour
     private void HandleRound(){
         if (IsOwner) {
             RoundSection.Value = true;
+
         }
         
     }
@@ -298,7 +305,9 @@ public class GameManager : NetworkBehaviour
     #endregion
 
     void HandlePurchasePhase(){
+        
         if (IsOwner) {
+            
             PurchasePhase.Value = true;
         }
     }
@@ -348,4 +357,4 @@ public enum GameState{
     PurchasePhase,
     EditMode,
     WinScreen
-}
+};
