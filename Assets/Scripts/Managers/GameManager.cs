@@ -35,27 +35,94 @@ public class GameManager : NetworkBehaviour
 
     private TMP_Text timeText;
 
-    public static NetworkVariable<int> roundNumber = new NetworkVariable<int>();
-    public static NetworkVariable<int> maxRounds = new NetworkVariable<int>();
 
     #endregion
 
     // Variables de rondas
-    
-    //public static NetworkVariable<int[]> localPoints = new NetworkVariable<int[]>();
-    //private int[] startPointArray = {0,0,0,0};
-    
+    static public int numberOfPlayers;
+
+    private int[] points = {4,8,8,16,32};
+    private int currentRound;
+    private int maxRounds = 5;
+
+    private int[] playerPoints;
+    private int[] playerLeaderboard;
+    private int[] helper;
+
+    public NetworkList<int> networkPoints;
+    public NetworkList<int> networkLeaderboard;
+
+    public static NetworkVariable<bool> handleLeaderboard = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone);
     
     void Awake() {
         Instance = this;
+        networkPoints = new NetworkList<int>();
+        networkLeaderboard = new NetworkList<int>(); 
+        handleLeaderboard.Value = false;
         //State = this.State;
         
     }
-     void Start() {
+    
+    void Start() {
         UpdateGameState(GameState.LanConnection);
     }
 
-    
+    public void AddPlayer(){
+        numberOfPlayers++;
+    }
+
+    private void updateScores(){
+        players = GameObject.FindGameObjectsWithTag("Player");
+        int pointsToDistribute = points[currentRound-1] / players.Length;
+        //Debug.Log("points for today: " + points[currentRound-1]);
+        //Debug.Log("Players.Length: " + players.Length);
+        //Debug.Log("Points to Distribute: " + pointsToDistribute);
+        foreach (GameObject player in players)
+        {
+            playerPoints[Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber)] += pointsToDistribute;
+        }
+
+        networkPoints.Clear();
+        for (int i = 0; i < playerPoints.Length; i++) {
+            networkPoints.Add(playerPoints[i]);
+        }
+
+        
+        //prevPlayerPoints = playerPoints;
+        Array.Copy(playerPoints, helper, numberOfPlayers);
+        //helper = playerPoints;
+        playerLeaderboard = SortAndIndex(helper);
+        Array.Reverse(playerLeaderboard);
+        //playerPoints = prevPlayerPoints;
+
+        /*for (int i = 0; i < playerLeaderboard.Length; i++) {
+            Debug.Log("order: " + playerLeaderboard[i]);
+        }*/
+
+        networkLeaderboard.Clear();
+        
+        for (int i = 0; i < playerLeaderboard.Length; i++) {
+            networkLeaderboard.Add(playerLeaderboard[i]);
+        }
+
+        handleLeaderboard.Value = !handleLeaderboard.Value;
+        //Debug.Log(handleLeaderboard.Value);
+    }
+
+    static int[] SortAndIndex<T>(T[] rg)
+    {
+        int i, c = rg.Length;
+        var keys = new int[c];
+        if (c > 1)
+        {
+            for (i = 0; i < c; i++)
+                keys[i] = i;
+
+            System.Array.Sort(rg, keys /*, ... */);
+        }
+        return keys;
+    }
+
     public override void OnNetworkSpawn()
     {
         
@@ -63,25 +130,9 @@ public class GameManager : NetworkBehaviour
         // Modifica las NetworkVariables y realiza otras configuraciones aquí
         GameStarted.Value = false; // Por ejemplo, establece GameStarted en false cuando se inicie el NetworkObject
         UpdateGameState(GameState.LanConnection);
-        maxRounds.Value = 5;
-        roundNumber.Value = 1;
+        
     }
-/*
-    private void updateScores(){
-        Debug.Log("updating scores...");
-        players = GameObject.FindGameObjectsWithTag("Player");
-        if (players != null) {
-            int givenPoints;
-            int intPlayerNumber;
-            givenPoints = roundPoints[roundNumber.Value-1]/players.Length;
-            foreach (GameObject player in players) {
-                player.GetComponent<PlayerController>().givePoints(givenPoints);
-                intPlayerNumber = Convert.ToInt32(player.GetComponent<PlayerController>().playerNumber.ToString());
-                localPoints[intPlayerNumber] += givenPoints;
-            }
-        }
-    }
-*/
+
 
     public void Update()
     {
@@ -197,12 +248,23 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
+        playerPoints = new int[numberOfPlayers];
+        helper = new int[numberOfPlayers];
+        playerLeaderboard = new int[numberOfPlayers];
+        currentRound = 0;
+        //Debug.Log(playerPoints.Length);
         GameStarted.Value = true;
     }
 
     public void CombatRound()
     {
-        GameManager.Instance.UpdateGameState(GameState.Round);
+        currentRound++;
+        if (currentRound > maxRounds) {
+            GameManager.Instance.UpdateGameState(GameState.WinScreen);
+        } else {
+            GameManager.Instance.UpdateGameState(GameState.Round);
+        }
+        
     }
 
     private void HandleStartGame(){
@@ -230,7 +292,7 @@ public class GameManager : NetworkBehaviour
     void HandleLeaderboard(){
         if (IsOwner) {
             LeaderboardSection.Value = true;
-            //updateScores();
+            updateScores();
         }
     }
     #endregion

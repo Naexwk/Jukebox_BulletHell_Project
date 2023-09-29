@@ -80,6 +80,8 @@ public class PlayerController : NetworkBehaviour
     // También asigna la función de habilidad especial a specAb
     void Start()
     {
+        GameObject gameManager = GameObject.FindWithTag("GameManager");
+        gameManager.GetComponent<GameManager>().AddPlayer();
         _mainCamera = Camera.main;
         bullethandler = GameObject.FindWithTag("BulletHandler");
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
