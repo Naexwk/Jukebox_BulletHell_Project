@@ -80,6 +80,8 @@ public class PlayerController : NetworkBehaviour
     // También asigna la función de habilidad especial a specAb
     void Start()
     {
+        GameObject gameManager = GameObject.FindWithTag("GameManager");
+        gameManager.GetComponent<GameManager>().AddPlayer();
         _mainCamera = Camera.main;
         bullethandler = GameObject.FindWithTag("BulletHandler");
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
@@ -145,6 +147,8 @@ public class PlayerController : NetworkBehaviour
         float xInput = Input.GetAxisRaw("Horizontal");
         float yInput = Input.GetAxisRaw("Vertical");
 
+        //Debug.Log("X: " + xInput + " - Y: " + yInput);
+
         if (xInput == 0 || yInput == 0) {
             rig.velocity = new Vector2(xInput * playerSpeed, yInput * playerSpeed);
         } else {
@@ -160,8 +164,16 @@ public class PlayerController : NetworkBehaviour
             Vector3 worldMousePos = _mainCamera.ScreenToWorldPoint(Input.mousePosition);
             Vector2 direction = worldMousePos - transform.position;
             direction.Normalize();
-            bullethandler.GetComponent<BulletHandler>().spawnBulletServerRpc(bulletSpeed, bulletDamage, direction, playerNumber, transform.position.x, transform.position.y);
+            bullethandler.GetComponent<BulletHandler>().spawnBulletServerRpc(bulletSpeed, direction, playerNumber, transform.position.x, transform.position.y);
             timeSinceLastFire = Time.time;
+
+            GameObject clone;
+            clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabBullet, transform.position, transform.rotation);
+            clone.GetComponent<PlayerBullet>().bulletDamage = bulletDamage;
+            clone.GetComponent<PlayerBullet>().bulletSpeed = bulletSpeed;
+            clone.GetComponent<PlayerBullet>().bulletDirection = direction;
+            clone.GetComponent<Rigidbody2D>().velocity = (direction) * (bulletSpeed);
+            colorCodeToPlayer(clone, playerNumber);
         }
     }
 
@@ -197,6 +209,10 @@ public class PlayerController : NetworkBehaviour
 
     // Función pública para hacer daño al jugador
     public void GetHit(){
+        if (!IsOwner) {
+            return;
+        }
+
         // Si es invulnerable, ignorar
         if (isInvulnerable) {
             return;
@@ -215,13 +231,14 @@ public class PlayerController : NetworkBehaviour
 
     // El jugador cae de lado, y se le quita el control
     public void Die(){
-        animator.SetBool("dead", true);
+        
         //transform.rotation = Quaternion.Euler(new Vector3(0,0,90));
         enableControl = false;
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.tag = "Dead Player";
         gameObject.GetComponent<Rigidbody2D>().simulated = false;
         changeDeadStateServerRpc(true, playerNumber);
+        animator.SetBool("dead", true);
     }
 
     // Se miden unos segundos igual a invulnerabilityWindow,
@@ -274,6 +291,9 @@ public class PlayerController : NetworkBehaviour
         gameObject.transform.position = spawnPositions[Convert.ToInt32(playerNumber)];
         gameObject.GetComponent<Rigidbody2D>().velocity = new Vector3(0f,0f,0f);
         gameObject.GetComponent<Rigidbody2D>().simulated = true;
+        if (IsServer) {
+            RespawnServerRpc();
+        }
         //spawnPlayerClientRpc();
     }
 
@@ -295,6 +315,16 @@ public class PlayerController : NetworkBehaviour
         enableControl = false;
 
         // DEV: Move to the Shadow Realm
+    }
+
+    public void spawnFakeBullet(float _bulletSpeed, Vector2 _direction, ulong _playerNumber, float _x, float _y){
+        if (IsOwner && playerNumber != _playerNumber) {
+            GameObject clone;
+            clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabFakeBullet, new Vector3 (_x, _y, 0f), transform.rotation);
+            clone.GetComponent<FakePlayerBullet>().bulletSpeed = _bulletSpeed;
+            clone.GetComponent<Rigidbody2D>().velocity = (_direction) * (_bulletSpeed);
+            colorCodeToPlayer(clone, _playerNumber);
+        }
     }
 
     // Se ejecuta en el servidor
@@ -346,10 +376,8 @@ public class PlayerController : NetworkBehaviour
         foreach (GameObject player in players) {
             if (player.GetComponent<PlayerController>().playerNumber == _playerNumber) {
                 if (isDead) {
-                    Debug.Log("Changed player " + _playerNumber + " tag to Dead Player");
                     player.tag = "Dead Player";
                 } else {
-                    Debug.Log("Changed player " + _playerNumber + " tag to Player");
                     player.tag = "Player";
                 }
             }
@@ -358,16 +386,58 @@ public class PlayerController : NetworkBehaviour
         foreach (GameObject deadplayer in deadplayers) {
             if (deadplayer.GetComponent<PlayerController>().playerNumber == _playerNumber) {
                 if (isDead) {
-                    Debug.Log("Changed player " + _playerNumber + " tag to Dead Player");
                     deadplayer.tag = "Dead Player";
                 } else {
-                    Debug.Log("Changed player " + _playerNumber + " tag to Player");
                     deadplayer.tag = "Player";
                 }
             }
         }
         
     }
+
+    [ServerRpc]
+    public void RespawnServerRpc(){
+        GameObject[] deadplayers;
+        deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        foreach (GameObject deadplayer in deadplayers) {
+            deadplayer.tag = "Player";
+        }
+        GameObject[] players;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        //Debug.Log(players.Length);
+        foreach (GameObject player in players) {
+            player.gameObject.GetComponent<Animator>().SetBool("dead", false);
+            gameObject.GetComponent<Rigidbody2D>().simulated = true;
+        }
+        
+    }
+/*
+    [ClientRpc]
+    public void changeDeadStateClientRpc (bool isDead, ulong _playerNumber) {
+        GameObject[] players;
+        GameObject[] deadplayers;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        foreach (GameObject player in players) {
+            if (player.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+                if (isDead) {
+                    player.tag = "Dead Player";
+                } else {
+                    player.tag = "Player";
+                }
+            }
+        }
+
+        foreach (GameObject deadplayer in deadplayers) {
+            if (deadplayer.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+                if (isDead) {
+                    deadplayer.tag = "Dead Player";
+                } else {
+                    deadplayer.tag = "Player";
+                }
+            }
+        }
+    }*/
 
 
 

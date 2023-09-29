@@ -34,7 +34,9 @@ public class ZombieSpawner : NetworkBehaviour
                 StopAllCoroutines();
                 hasCoroutines = false;
             }
-            StartCoroutine(spawnZombie());
+            if (IsServer) {
+                StartCoroutine(spawnZombie());
+            }
             GetComponent<Rigidbody2D>().simulated = false;
         } else {
             if (hasCoroutines) {

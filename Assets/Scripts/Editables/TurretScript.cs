@@ -30,8 +30,8 @@ public class TurretScript : MonoBehaviour
 
 
     // Al entrar un jugador, añadirlo a los posibles objetivos
-    void OnTriggerEnter2D(Collider2D other) {
-        if (other.CompareTag("Player")){
+    void OnTriggerStay2D(Collider2D other) {
+        if (other.CompareTag("Player") && !playersIn.Contains(other.gameObject)){
             playersIn.Add(other.gameObject);
         }
     }

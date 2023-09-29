@@ -126,6 +126,7 @@ GameObject:
   - component: {fileID: 414456569366095977}
   - component: {fileID: 668808493260043408}
   - component: {fileID: 8165343297474947540}
+  - component: {fileID: -4339720900654936322}
   - component: {fileID: 5923272950577654911}
   - component: {fileID: -1798125622611711641}
   - component: {fileID: 3209636720380116236}
@@ -211,7 +212,7 @@ MonoBehaviour:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1412632871092107711}
-  m_Enabled: 1
+  m_Enabled: 0
   m_EditorHideFlags: 0
   m_Script: {fileID: 11500000, guid: 892c4b0c7b9d6934a8063faca5fe9b99, type: 3}
   m_Name: 
@@ -222,6 +223,24 @@ MonoBehaviour:
   shootPoint: {fileID: 3275233722309896812}
   force: 500
   fireRateTimer: 0.5
+--- !u!114 &-4339720900654936322
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 1412632871092107711}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: 2722d01a6b57b1c45bf92d843ba8410b, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  alertLight: {fileID: 1162052405351543886}
+  canonGun: {fileID: 7383287973357036184}
+  shootPoint: {fileID: 3275233722309896812}
+  distanceThreshold: 15
+  fireRate: 0.5
+  force: 500
 --- !u!58 &5923272950577654911
 CircleCollider2D:
   m_ObjectHideFlags: 0
@@ -229,7 +248,7 @@ CircleCollider2D:
   m_PrefabInstance: {fileID: 0}
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 1412632871092107711}
-  m_Enabled: 1
+  m_Enabled: 0
   m_Density: 1
   m_Material: {fileID: 0}
   m_IncludeLayers:

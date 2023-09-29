@@ -7,7 +7,7 @@ using System.Linq;
 using Unity.Netcode;
 public class Leaderboard : MonoBehaviour
 {
-    [SerializeField] private GameManager gameManager;
+    private GameManager gameManager;
     private GameObject[] players;
     private GameObject[] deadPlayers;
     
@@ -17,56 +17,36 @@ public class Leaderboard : MonoBehaviour
     [SerializeField] private TMP_Text[] playerNames;
     [SerializeField] private TMP_Text[] playerScores;
 
+    void OnEnable()
+    {
+        gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
+        updateLeaderboard(true, true);
+    }
 
-    public void distributePoints(){
-        /*
-        deadPlayers = GameObject.FindGameObjectsWithTag("Dead Player");
-        players = GameObject.FindGameObjectsWithTag("Player");
-        int allPlayers = players.Length + deadPlayers.Length;
-        if (allPlayers > 2) {
+    void Start()
+    {
+        GameManager.handleLeaderboard.OnValueChanged += updateLeaderboard;
+    }
+
+    void OnDestroy()
+    {
+        GameManager.handleLeaderboard.OnValueChanged -= updateLeaderboard;
+    }
+
+    public void updateLeaderboard(bool prev, bool curr){
+        //Debug.Log("hello: " + GameManager.numberOfPlayers);
+        if (GameManager.numberOfPlayers >= 3) {
             player3.SetActive(true);
         }
-        if (allPlayers > 3) {
+        if (GameManager.numberOfPlayers >= 4) {
             player4.SetActive(true);
         }
-        //List <int> indices = new List <int> ();
-        List <int> privatePoints = new List <int> ();
-        for (int i = 0; i < GameManager.localPoints.Count; i++) {
-            privatePoints.Add(GameManager.localPoints[i]);
-            //indices.Add(i);
+
+        for (int i = 0; i < gameManager.networkLeaderboard.Count; i++) {
+            playerNames[i].text = "Player " + (gameManager.networkLeaderboard[i]+1);
+            playerScores[i].text = "" + gameManager.networkPoints[gameManager.networkLeaderboard[i]];
         }
-        var sorted = privatePoints
-            .Select((x, i) => new KeyValuePair<int, int>(x, i))
-            .OrderBy(x => x.Key)
-            .ToList();
-        List<int> B = sorted.Select(x => x.Key).ToList();
-        List<int> idx = sorted.Select(x => x.Value).ToList();
-
-        for (int i = 0; i < allPlayers; i++) {
-            Debug.Log("B: " + B[i] + " idx: " + idx[i]);
-        }
-
-        gameManager.changeHandledLeaderboard();*/
-
-        
-
-
-
-
-
-
-
-/*        int[] indices = new int[GameManager.localPoints.Count];
-        int[] privatePoints = new int[GameManager.localPoints.Count];
-        privatePoints = GameManager.localPoints.ToArray();
-        for (int i = 0; i < indices.Length; i++) indices[i] = i;
-        Array.Sort(privatePoints, indices);
-        Array.Reverse(privatePoints);
-        Array.Reverse(indices);
-
-        for (int i = 0; i < players.Length; i++) {
-            playerNames[i].text = "Player " + indices[i];
-            playerScores[i].text = "" + privatePoints[i];
-        }*/
     }
+
+
 }
