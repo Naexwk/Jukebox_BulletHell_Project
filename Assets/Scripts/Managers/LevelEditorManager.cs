@@ -25,8 +25,10 @@ public class LevelEditorManager : NetworkBehaviour
         spawnedObject = Instantiate(ItemPrefabs[index], new Vector3(x, y, 0), Quaternion.identity);
         if (spawnedObject.tag == "Spawner") {
             spawnedObject.GetComponent<NetworkObject>().Spawn();
+        } else {
+            EditModeSpawnerClientRpc(x, y, index);
         }
-        EditModeSpawnerClientRpc(x, y, index);
+        
     }
 
     [ClientRpc]

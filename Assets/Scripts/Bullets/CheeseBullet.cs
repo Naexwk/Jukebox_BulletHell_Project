@@ -20,7 +20,7 @@ public class CheeseBullet : NetworkBehaviour
 
         foreach (GameObject player in players)
         {
-            Physics2D.IgnoreCollision(player.transform.GetComponent<Collider2D>(), GetComponent<Collider2D>());
+            Physics2D.IgnoreCollision(player.transform.GetComponent<CapsuleCollider2D>(), GetComponent<Collider2D>());
         }
 
         rb.AddTorque((750f * Mathf.Deg2Rad) * rb.inertia, ForceMode2D.Impulse);

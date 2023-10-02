@@ -65,3 +65,6 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: f3dc23fbea703714090d4a658ae1bda0, type: 3}
   m_Name: 
   m_EditorClassIdentifier: 
+  lockOnPlayer: 0
+  verticalOffset: 1
+  horizontalOffset: 3

@@ -16,6 +16,8 @@ public class CameraTarget : NetworkBehaviour
     private Camera _mainCamera;
     bool lastLockOnValue = false;
     float helper;
+    public float verticalOffset = 0f;
+    public float horizontalOffset = 0f;
 
     // Buscar al jugador cuyo ID corresponda al del cameraTarget
     public void StartCam () {
@@ -50,22 +52,22 @@ public class CameraTarget : NetworkBehaviour
 
             helper = Math.Abs((chosenPlayer.transform.position.x) - (posX));
             //Debug.Log("X: " + helper);
-            if (helper > 6f) {
+            if (helper > horizontalOffset) {
                 if (posX > chosenPlayer.transform.position.x) {
-                    posX = chosenPlayer.transform.position.x + 6f;
+                    posX = chosenPlayer.transform.position.x + horizontalOffset;
                 } else {
-                    posX = chosenPlayer.transform.position.x - 6f;
+                    posX = chosenPlayer.transform.position.x - horizontalOffset;
                 }
             }
             //Debug.Log("PosX: " + posX);
             
             helper = Math.Abs((chosenPlayer.transform.position.y) - (posY));
             //Debug.Log("Y: " + helper);
-            if (helper > 1.5f) {
+            if (helper > verticalOffset) {
                 if (posY > chosenPlayer.transform.position.y) {
-                    posY = chosenPlayer.transform.position.y + 1.5f;
+                    posY = chosenPlayer.transform.position.y + verticalOffset;
                 } else {
-                    posY = chosenPlayer.transform.position.y - 1.5f;
+                    posY = chosenPlayer.transform.position.y - verticalOffset;
                 }
             }
             //Debug.Log("X: " + posX + " Y: " + posY);

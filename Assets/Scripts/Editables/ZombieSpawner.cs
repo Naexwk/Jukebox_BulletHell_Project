@@ -21,6 +21,7 @@ public class ZombieSpawner : NetworkBehaviour
     {
         base.OnNetworkSpawn();
         GameManager.State.OnValueChanged += StateChange;
+        
     }
 
     public override void OnDestroy()
@@ -43,7 +44,7 @@ public class ZombieSpawner : NetworkBehaviour
                 StopAllCoroutines();
                 hasCoroutines = false;
             }
-            GetComponent<Rigidbody2D>().simulated = false;
+            GetComponent<Rigidbody2D>().simulated = true;
         }
     }
 
@@ -62,4 +63,10 @@ public class ZombieSpawner : NetworkBehaviour
         clone = Instantiate(zombiePrefab, transform.position, transform.rotation);
         clone.GetComponent<NetworkObject>().Spawn();
     }
+
+
+    /*[ClientRpc]
+    public void disableHitboxClientRpc(){
+        this.game
+    }*/
 }

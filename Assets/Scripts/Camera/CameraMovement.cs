@@ -32,9 +32,9 @@ public class CameraMovement : NetworkBehaviour
 
     private void changeZoomByGameState(GameState prev, GameState curr){
         if (curr == GameState.Round || curr == GameState.StartGame) {
-            Camera.main.orthographicSize = 7;
+            Camera.main.orthographicSize = 9;
         } else {
-            Camera.main.orthographicSize = 15;
+            Camera.main.orthographicSize = 17;
         }
     }
 }
