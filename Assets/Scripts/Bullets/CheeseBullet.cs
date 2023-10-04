@@ -12,6 +12,11 @@ public class CheeseBullet : NetworkBehaviour
     // Variable que determina si la bala es server-side o client-side
     public bool isFake;
 
+    /*void Awake()
+    {
+        Physics.IgnoreLayerCollision(6, 6);
+    }*/
+
     // Ignorar colisiones con jugadores
     void Start()
     {
