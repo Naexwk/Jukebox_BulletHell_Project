@@ -18,7 +18,7 @@ GameObject:
   - component: {fileID: 1457224737242071980}
   - component: {fileID: 5499936393201802720}
   - component: {fileID: 8572051317912480545}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: regular_zombie
   m_TagString: Enemy
   m_Icon: {fileID: 0}
@@ -177,12 +177,6 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   updateTimer: 0
-  idle1: {fileID: 8300000, guid: 3dbd5e7b138c6724a94367911b082ea1, type: 3}
-  idle2: {fileID: 8300000, guid: 939c41a2c3ef30947b4639fca719a2ae, type: 3}
-  hurt1: {fileID: 8300000, guid: 382d1a8cbdf14e74bb6396cae32fe0e9, type: 3}
-  hurt2: {fileID: 8300000, guid: f80e3698c3101884ab990dfb075689a4, type: 3}
-  death1: {fileID: 8300000, guid: 2e03c3a0651997244b093b4c80c0f667, type: 3}
-  death2: {fileID: 8300000, guid: d9c8e0564cbb8d64aa9164917401724c, type: 3}
   health:
     m_InternalValue: 0
 --- !u!195 &794491109718888550

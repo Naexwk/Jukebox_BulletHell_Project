@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2049637278286294298}
   - component: {fileID: 989052462187468261}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: dead sign
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -104,7 +104,7 @@ GameObject:
   - component: {fileID: 7792504328748395544}
   - component: {fileID: 4652896907860604613}
   - component: {fileID: 3457618332700867865}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Player
   m_TagString: Player
   m_Icon: {fileID: 0}
@@ -442,7 +442,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6051225222532709231}
   - component: {fileID: 5887770311017059784}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: RightHandCheeseman
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -526,7 +526,7 @@ GameObject:
   m_Component:
   - component: {fileID: 2812955116358305212}
   - component: {fileID: 1517047875378023715}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Shadow
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -610,7 +610,7 @@ GameObject:
   m_Component:
   - component: {fileID: 1062476979763474365}
   - component: {fileID: 4729484220246250264}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: HeadCheeseman
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -694,7 +694,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6369784671957239104}
   - component: {fileID: 3131568147851985453}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: BodyCheeseman
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -778,7 +778,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3178347309023308278}
   - component: {fileID: 1594915160751358535}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: Square
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -862,7 +862,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6143062379074253745}
   - component: {fileID: 4294316429057340220}
-  m_Layer: 0
+  m_Layer: 7
   m_Name: LeftHandCheeseman
   m_TagString: Untagged
   m_Icon: {fileID: 0}

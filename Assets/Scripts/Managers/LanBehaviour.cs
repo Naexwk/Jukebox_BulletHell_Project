@@ -2,8 +2,11 @@ using UnityEngine;
 using Unity.Netcode;
 using Unity.Netcode.Transports.UTP;
 using TMPro;
+using System;
 using System.Net;
 using System.Net.Sockets;
+using System.Threading.Tasks;
+using Unity.Services.Core;
 
 public class LanBehaviour : NetworkBehaviour
 {
@@ -27,6 +30,7 @@ public class LanBehaviour : NetworkBehaviour
 
 	// Hostea un juego y añade un GameManager
 	public void StartHost() {
+		//Debug.Log(HostGame(3));
 		NetworkManager.Singleton.StartHost();
 		GetLocalIPAddress(); 
 		ipAddressText.text = "Hosted at " + ipAddress.ToString();
@@ -79,5 +83,52 @@ public class LanBehaviour : NetworkBehaviour
     {
         playButton.SetActive(_state);
     }
+
+
+
+/*
+public struct RelayHostData
+{
+    public string JoinCode;
+    public string IPv4Address;
+    public ushort Port;
+    public Guid AllocationID;
+    public byte[] AllocationIDBytes;
+    public byte[] ConnectionData;
+    public byte[] Key;
+}
+
+public static async Task<RelayHostData> HostGame(int maxConn)
+{
+    //Initialize the Unity Services engine
+    await UnityServices.InitializeAsync();
+    //Always autheticate your users beforehand
+    if (!AuthenticationService.Instance.IsSignedIn)
+    {
+        //If not already logged, log the user in
+        await AuthenticationService.Instance.SignInAnonymouslyAsync();
+    }
+
+    //Ask Unity Services to allocate a Relay server
+    Allocation allocation = await Unity.Services.Relay.RelayService.Instance.CreateAllocationAsync(maxConn);
+
+    //Populate the hosting data
+    RelayHostData data = new RelayHostData
+    {
+        // WARNING allocation.RelayServer is deprecated
+        IPv4Address = allocation.RelayServer.IpV4,
+        Port = (ushort) allocation.RelayServer.Port,
+
+        AllocationID = allocation.AllocationId,
+        AllocationIDBytes = allocation.AllocationIdBytes,
+        ConnectionData = allocation.ConnectionData,
+        Key = allocation.Key,
+    };
+
+    //Retrieve the Relay join code for our clients to join our party
+    data.JoinCode = await Unity.Services.Relay.RelayService.Instance.GetJoinCodeAsync(data.AllocationID);
+
+    return data;
+}*/
 
 }

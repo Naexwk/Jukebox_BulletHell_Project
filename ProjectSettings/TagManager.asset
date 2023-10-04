@@ -26,6 +26,8 @@ TagManager:
   - 
   - Water
   - UI
+  - Enemy
+  - Player
   - 
   - 
   - 
@@ -38,9 +40,7 @@ TagManager:
   - 
   - 
   - 
-  - 
-  - 
-  - 
+  - CheeseBullet
   - 
   - 
   - 
