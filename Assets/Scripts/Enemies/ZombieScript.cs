@@ -43,7 +43,13 @@ public class ZombieScript : NetworkBehaviour
     {
         if (col.gameObject.tag == "PlayerBullet")
         {
-            ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage);
+            if (col.gameObject.GetComponent<PlayerBullet>() != null) {
+                ZombieGetHitServerRpc(col.gameObject.GetComponent<PlayerBullet>().bulletDamage);
+            } else if (col.gameObject.GetComponent<CheeseBullet>() != null) {
+                ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
+            }
+            
+            
         }
     }
 
@@ -57,7 +63,7 @@ public class ZombieScript : NetworkBehaviour
     }
 
     // Al entrar en contacto con una bala de queso, recibir daño
-    void OnCollisionEnter2D(Collision2D col)
+    /*void OnCollisionEnter2D(Collision2D col)
     {
 
         // Funciona exclusivamente con la bala de queso porque es la única con Collider, no trigger
@@ -65,7 +71,7 @@ public class ZombieScript : NetworkBehaviour
         {
             ZombieGetHitServerRpc(col.gameObject.GetComponent<CheeseBullet>().bulletDamage);
         }
-    }
+    }*/
     
     // Buscar al jugador más cercano
     void FindPlayer()

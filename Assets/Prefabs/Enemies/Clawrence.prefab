@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 628790794734732062}
   - component: {fileID: 2043798982892596738}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_pinza1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -94,7 +94,7 @@ GameObject:
   m_Component:
   - component: {fileID: 5608835806536111695}
   - component: {fileID: 8389232137167273053}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_pinza2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -178,7 +178,7 @@ GameObject:
   m_Component:
   - component: {fileID: 38654193236340691}
   - component: {fileID: 7952583122623712059}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: Clawrence
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -238,7 +238,7 @@ GameObject:
   m_Component:
   - component: {fileID: 7851349043579602819}
   - component: {fileID: 8836769624824208609}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_patas1
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -323,7 +323,7 @@ GameObject:
   - component: {fileID: 8969444901553919335}
   - component: {fileID: 2711303340495606687}
   - component: {fileID: 6534077811434911609}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_cuerpo
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -428,7 +428,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3685053949600091995}
   - component: {fileID: 5225868683096328179}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_patas2
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -512,7 +512,7 @@ GameObject:
   m_Component:
   - component: {fileID: 8214880664583000076}
   - component: {fileID: 4352914768938118650}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_pinza1cierre
   m_TagString: Untagged
   m_Icon: {fileID: 0}
@@ -596,7 +596,7 @@ GameObject:
   m_Component:
   - component: {fileID: 3104687380069588979}
   - component: {fileID: 714191855154191326}
-  m_Layer: 0
+  m_Layer: 6
   m_Name: clawrence_cabeza (1)
   m_TagString: Untagged
   m_Icon: {fileID: 0}
