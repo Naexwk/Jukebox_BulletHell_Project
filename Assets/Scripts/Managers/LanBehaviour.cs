@@ -7,6 +7,10 @@ using System.Net;
 using System.Net.Sockets;
 using System.Threading.Tasks;
 using Unity.Services.Core;
+using Unity.Services.Authentication;
+using Unity.Services.Relay;
+using Unity.Services.Relay.Models;
+using Unity.Networking.Transport.Relay;
 
 public class LanBehaviour : NetworkBehaviour
 {
@@ -21,20 +25,26 @@ public class LanBehaviour : NetworkBehaviour
 
 	public GameObject gameManagerObj;
 	public GameObject playButton;
+	string inputJoinCode;
 
-	void Start()
+	async void Start()
 	{
-		ipAddress = "0.0.0.0";
-		SetIpAddress();
+		//ipAddress = "0.0.0.0";
+		//SetIpAddress();
+		await UnityServices.InitializeAsync();
+		AuthenticationService.Instance.SignedIn += () => {
+			Debug.Log("Signed in " + AuthenticationService.Instance.PlayerId);
+		};
+		await AuthenticationService.Instance.SignInAnonymouslyAsync();
 	}
 
 	// Hostea un juego y añade un GameManager
 	public void StartHost() {
 		//Debug.Log(HostGame(3));
-		NetworkManager.Singleton.StartHost();
-		GetLocalIPAddress(); 
-		ipAddressText.text = "Hosted at " + ipAddress.ToString();
-		InstantiateGameManager();
+		CreateRelay();
+		
+		//GetLocalIPAddress(); 
+		
 
 	}
 
@@ -42,11 +52,13 @@ public class LanBehaviour : NetworkBehaviour
 	public void StartClient() {
 		// Obtiene la IP local y se une al juego con esa IP
 		// Esto debe cambiar a conseguir la IP del campo de texto
-		ipAddress = GetLocalIPAddress(); 
+		//ipAddress = GetLocalIPAddress(); 
 		//ipAddress = ip.text;
-		SetIpAddress();
-		NetworkManager.Singleton.StartClient();
-
+		//SetIpAddress();
+		inputJoinCode = ip.text;
+		JoinRelay(inputJoinCode);
+		
+		
 	}
 
 	/* Gets the Ip Address of your connected network and
@@ -83,6 +95,35 @@ public class LanBehaviour : NetworkBehaviour
     {
         playButton.SetActive(_state);
     }
+
+	public async void CreateRelay(){
+		try {
+			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
+			string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
+			Debug.Log(joinCode);
+
+			RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
+			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+			NetworkManager.Singleton.StartHost();
+			ipAddressText.text = "Join Code: " + joinCode;
+			InstantiateGameManager();
+		} catch (RelayServiceException e){
+			Debug.Log(e);
+		}
+		
+	}
+
+	private async void JoinRelay(string joinCode){
+		try {
+			Debug.Log("Joining Relay with " + joinCode);
+			JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);
+			RelayServerData relayServerData = new RelayServerData(joinAllocation, "dtls");
+			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
+			NetworkManager.Singleton.StartClient();
+		} catch (RelayServiceException e){
+			Debug.Log(e);
+		}
+	}
 
 
 
