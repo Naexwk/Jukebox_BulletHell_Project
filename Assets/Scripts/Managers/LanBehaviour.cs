@@ -11,21 +11,27 @@ using Unity.Services.Authentication;
 using Unity.Services.Relay;
 using Unity.Services.Relay.Models;
 using Unity.Networking.Transport.Relay;
+using UnityEngine.SceneManagement;
 
 public class LanBehaviour : NetworkBehaviour
 {
 	private PlayerController pc;
 	private bool pcAssigned;
 
-	[SerializeField] TextMeshProUGUI ipAddressText;
-	[SerializeField] TMP_InputField ip;
+	//[SerializeField] TextMeshProUGUI ipAddressText;
+	[SerializeField] TMP_InputField joinCodeText;
 
-	[SerializeField] string ipAddress;
+	//[SerializeField] string ipAddress;
 	[SerializeField] UnityTransport transport;
 
 	public GameObject gameManagerObj;
-	public GameObject playButton;
+	//public GameObject playButton;
 	string inputJoinCode;
+	public string hostJoinCode;
+
+	void Awake () {
+		DontDestroyOnLoad(this.gameObject);
+	}
 
 	async void Start()
 	{
@@ -55,7 +61,7 @@ public class LanBehaviour : NetworkBehaviour
 		//ipAddress = GetLocalIPAddress(); 
 		//ipAddress = ip.text;
 		//SetIpAddress();
-		inputJoinCode = ip.text;
+		inputJoinCode = joinCodeText.text;
 		JoinRelay(inputJoinCode);
 		
 		
@@ -65,7 +71,7 @@ public class LanBehaviour : NetworkBehaviour
 	shows on the screen in order to let other players join
 	by inputing that Ip in the input field */
 	// ONLY FOR HOST SIDE 
-	public string GetLocalIPAddress() {
+	/*public string GetLocalIPAddress() {
 		var host = Dns.GetHostEntry(Dns.GetHostName());
 		foreach (var ip in host.AddressList) {
 			if (ip.AddressFamily == AddressFamily.InterNetwork) {
@@ -74,15 +80,15 @@ public class LanBehaviour : NetworkBehaviour
 			}
 		}
 		throw new System.Exception("No network adapters with an IPv4 address in the system!");
-	}
+	}*/
 
 	/* Sets the Ip Address of the Connection Data in Unity Transport
 	to the Ip Address which was input in the Input Field */
 	// ONLY FOR CLIENT SIDE
-	public void SetIpAddress() {
+	/*public void SetIpAddress() {
 		transport = NetworkManager.Singleton.GetComponent<UnityTransport>();
 		transport.ConnectionData.Address = ipAddress;
-	}
+	}*/
 
 	// Instancia un GameManager. Server-only
 	public void InstantiateGameManager(){
@@ -91,29 +97,36 @@ public class LanBehaviour : NetworkBehaviour
 		gameManagerPrefab.GetComponent<NetworkObject>().Spawn();
 	}
 
-	public void activatePlayButton(bool _state)
+	public void ChangeScene(string sceneName){
+		NetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
+	}
+
+	/*public void activatePlayButton(bool _state)
     {
         playButton.SetActive(_state);
-    }
+    }*/
 
 	public async void CreateRelay(){
 		try {
 			Allocation allocation = await RelayService.Instance.CreateAllocationAsync(3);
 			string joinCode = await RelayService.Instance.GetJoinCodeAsync(allocation.AllocationId);
 			Debug.Log(joinCode);
+			hostJoinCode = joinCode;
 
 			RelayServerData relayServerData = new RelayServerData(allocation, "dtls");
 			NetworkManager.Singleton.GetComponent<UnityTransport>().SetRelayServerData(relayServerData);
 			NetworkManager.Singleton.StartHost();
-			ipAddressText.text = "Join Code: " + joinCode;
+			//ipAddressText.text = "Join Code: " + joinCode;
 			InstantiateGameManager();
+			ChangeScene("GameRoom");
+
 		} catch (RelayServiceException e){
 			Debug.Log(e);
 		}
 		
 	}
 
-	private async void JoinRelay(string joinCode){
+	public async void JoinRelay(string joinCode){
 		try {
 			Debug.Log("Joining Relay with " + joinCode);
 			JoinAllocation joinAllocation = await RelayService.Instance.JoinAllocationAsync(joinCode);

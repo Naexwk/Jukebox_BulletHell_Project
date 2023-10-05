@@ -4,6 +4,7 @@ using UnityEngine;
 using System;
 using TMPro;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
 
 public class GameManager : NetworkBehaviour
 {
@@ -40,6 +41,7 @@ public class GameManager : NetworkBehaviour
 
     // Variables de rondas
     static public int numberOfPlayers;
+    public static NetworkVariable<bool> changedPlayers = new NetworkVariable<bool>();
 
     private int[] points = {4,8,8,16,32};
     private int currentRound;
@@ -59,16 +61,48 @@ public class GameManager : NetworkBehaviour
         networkPoints = new NetworkList<int>();
         networkLeaderboard = new NetworkList<int>(); 
         handleLeaderboard.Value = false;
+        //SceneManager.sceneLoaded += OnSceneLoaded;
+        NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         //State = this.State;
         
     }
     
     void Start() {
+        //Debug.Log(SceneManager.GetActiveScene().name);
         UpdateGameState(GameState.LanConnection);
     }
+    
+    /*private void OnEnable() {
+        Debug.Log(SceneManager.GetActiveScene().name);
+        Debug.Log("Called");
+        if (SceneManager.GetActiveScene().name == "SampleScene"){
+            StartGame();
+            HandleStartGame();
+        }
+    }*/
+
+    void OnSceneEvent (SceneEvent sceneEvent) {
+        if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
+            Debug.Log ("Called OnSync");
+                if (SceneManager.GetActiveScene().name == "SampleScene"){
+                StartGame();
+                HandleStartGame();
+            }
+        }
+
+    }
+
+    /*void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "SampleScene") {
+            
+        }
+    }*/
+    
 
     public void AddPlayer(){
         numberOfPlayers++;
+        changedPlayers.Value = !changedPlayers.Value;
     }
 
     private void updateScores(){
@@ -129,6 +163,7 @@ public class GameManager : NetworkBehaviour
         base.OnNetworkSpawn();
         // Modifica las NetworkVariables y realiza otras configuraciones aquí
         GameStarted.Value = false; // Por ejemplo, establece GameStarted en false cuando se inicie el NetworkObject
+        DontDestroyOnLoad(this.gameObject);
         UpdateGameState(GameState.LanConnection);
         
     }
@@ -277,7 +312,7 @@ public class GameManager : NetworkBehaviour
 
         if (IsOwner) {
             players = GameObject.FindGameObjectsWithTag("Player");
-
+            Debug.Log(players.Length);
             foreach (GameObject player in players)
             {
                 //player.GetComponent<PlayerController>().spawnPlayerClientRpc();

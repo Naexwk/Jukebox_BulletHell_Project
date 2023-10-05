@@ -5,6 +5,8 @@ using UnityEngine.UI;
 using Unity.Netcode;
 using TMPro;
 
+using UnityEngine.SceneManagement;
+
 public class MenuManager : NetworkBehaviour
 {
     [SerializeField] private GameObject _lanScreen, _timer, _leaderboard, _purchaseScreen, _purchaseItemsUI, _purchaseTrapsUI;
@@ -21,6 +23,7 @@ public class MenuManager : NetworkBehaviour
     public bool loaded = false;
 
     private PlayerController myPlayerScript;
+    bool startRecordingLife = false;
 
 
     // Suscribirse al cambio de estado del GameManager
@@ -28,45 +31,57 @@ public class MenuManager : NetworkBehaviour
         
         GameManager.State.OnValueChanged += GameManagerOnGameStateChanged;
         GameManager.handleLeaderboard.OnValueChanged += updateLeaderboard;
+        NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
     }
 
     // Encuentra al jugador al que le corresponda este MenuManager
     void Start()
     {
 
-        UIHelper = GameObject.FindWithTag("UIHelper");
+        
+    }
 
-        _lanScreen = UIHelper.GetComponent<UIHelper>().LanScreen;
-        _timer = UIHelper.GetComponent<UIHelper>().GameTimer;
-        _leaderboard = UIHelper.GetComponent<UIHelper>().Leaderboard;
-        _purchaseScreen = UIHelper.GetComponent<UIHelper>().PurchaseUI;
-        _purchaseItemsUI = UIHelper.GetComponent<UIHelper>().PurchaseItems;
-        _purchaseTrapsUI = UIHelper.GetComponent<UIHelper>().PurchaseTraps;
-        _vidaText = UIHelper.GetComponent<UIHelper>().VidaText.GetComponent<TMP_Text>();
-        _winScreen = UIHelper.GetComponent<UIHelper>().winScreen;
+    void OnSceneEvent (SceneEvent sceneEvent) {
+        if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
+            //Debug.Log ("Called OnSync");
+                if (SceneManager.GetActiveScene().name == "SampleScene"){
+                    startRecordingLife = true;
+                    UIHelper = GameObject.FindWithTag("UIHelper");
 
-        loaded = true;
+                    //_lanScreen = UIHelper.GetComponent<UIHelper>().LanScreen;
+                    _timer = UIHelper.GetComponent<UIHelper>().GameTimer;
+                    _leaderboard = UIHelper.GetComponent<UIHelper>().Leaderboard;
+                    _purchaseScreen = UIHelper.GetComponent<UIHelper>().PurchaseUI;
+                    _purchaseItemsUI = UIHelper.GetComponent<UIHelper>().PurchaseItems;
+                    _purchaseTrapsUI = UIHelper.GetComponent<UIHelper>().PurchaseTraps;
+                    _vidaText = UIHelper.GetComponent<UIHelper>().VidaText.GetComponent<TMP_Text>();
+                    _winScreen = UIHelper.GetComponent<UIHelper>().winScreen;
 
-        loadButtonActions();
+                    loaded = true;
 
-        if (IsOwner) {
-            
-            players = GameObject.FindGameObjectsWithTag("Player");
-            foreach (GameObject player in players) {
-                if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                    myPlayer = player;
-                    myPlayerScript = player.GetComponent<PlayerController>();
-                }
+                    loadButtonActions();
+
+                    if (IsOwner) {
+                        
+                        players = GameObject.FindGameObjectsWithTag("Player");
+                        foreach (GameObject player in players) {
+                            if (player.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
+                                myPlayer = player;
+                                myPlayerScript = player.GetComponent<PlayerController>();
+                            }
+                        }
+
+                        cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
+                        foreach (GameObject cameraTarget in cameraTargets) {
+                            if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
+                                myCameraTarget = cameraTarget;
+                            }
+                        }
+                        //StartCoroutine(searchForCameraTarget());
+                    }
             }
-
-            cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
-            foreach (GameObject cameraTarget in cameraTargets) {
-                if (cameraTarget.GetComponent<NetworkObject>().OwnerClientId == GetComponent<NetworkObject>().OwnerClientId){
-                    myCameraTarget = cameraTarget;
-                }
-            }
-            //StartCoroutine(searchForCameraTarget());
         }
+
     }
 
     void loadButtonActions(){
@@ -129,7 +144,7 @@ public class MenuManager : NetworkBehaviour
     }
 
     void Update (){ 
-        if (IsOwner) {
+        if (IsOwner && startRecordingLife) {
             _vidaText.GetComponent<TMP_Text>().text = ("Vida: " + myPlayerScript.currentHealth);
         }
         
@@ -140,7 +155,7 @@ public class MenuManager : NetworkBehaviour
         if (!loaded || !IsOwner) {
             return;
         }
-        _lanScreen.SetActive(curr == GameState.LanConnection);
+        //_lanScreen.SetActive(curr == GameState.LanConnection);
         _timer.SetActive(curr == GameState.StartGame ||curr == GameState.Round || curr == GameState.PurchasePhase || curr == GameState.PurchasePhase);
         _leaderboard.SetActive(curr == GameState.Leaderboard);
         _winScreen.SetActive(curr == GameState.WinScreen);
