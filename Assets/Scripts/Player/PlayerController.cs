@@ -114,7 +114,7 @@ public class PlayerController : NetworkBehaviour
             
             outline = gameObject.transform.GetChild(0).gameObject;
 
-            Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
+            //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
             
             // DEV 
             

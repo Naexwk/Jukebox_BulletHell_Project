@@ -288,12 +288,15 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        playerPoints = new int[numberOfPlayers];
-        helper = new int[numberOfPlayers];
-        playerLeaderboard = new int[numberOfPlayers];
-        currentRound = 1;
-        //Debug.Log(playerPoints.Length);
-        GameStarted.Value = true;
+        if (IsServer) {
+            playerPoints = new int[numberOfPlayers];
+            helper = new int[numberOfPlayers];
+            playerLeaderboard = new int[numberOfPlayers];
+            currentRound = 1;
+            //Debug.Log(playerPoints.Length);
+            GameStarted.Value = true;
+        }
+        
     }
 
     public void CombatRound()
