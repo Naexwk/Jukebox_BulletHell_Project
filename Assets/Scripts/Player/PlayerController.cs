@@ -82,7 +82,7 @@ public class PlayerController : NetworkBehaviour
         DontDestroyOnLoad(this.gameObject);
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
         if (IsOwner){
-            Debug.Log("player number: " + playerNumber);
+            //Debug.Log("player number: " + playerNumber);
             spawnMenuManagerServerRpc(playerNumber);
         }
     }
@@ -91,8 +91,13 @@ public class PlayerController : NetworkBehaviour
     // También asigna la función de habilidad especial a specAb
     void Start()
     {
-        addPlayerServerRpc();
+        if (IsOwner) {
+            addPlayerServerRpc();
+        
+        }
+
         changeCharacter("cheeseman");
+        
         
         
         //colorCodeToPlayer(outline, playerNumber);
@@ -364,7 +369,7 @@ public class PlayerController : NetworkBehaviour
     // Le dota su objetivo a la cámara
     [ClientRpc]
     public void startCameraClientRpc(){
-        Debug.Log("Called here");
+        //Debug.Log("Called here");
         GameObject mainCam;
         mainCam = GameObject.FindWithTag("MainCamera");
         

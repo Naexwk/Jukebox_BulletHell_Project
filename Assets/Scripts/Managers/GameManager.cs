@@ -83,7 +83,7 @@ public class GameManager : NetworkBehaviour
 
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
-            Debug.Log ("Called OnSync");
+            //Debug.Log ("Called OnSync");
                 if (SceneManager.GetActiveScene().name == "SampleScene"){
                 StartGame();
                 HandleStartGame();
@@ -107,7 +107,12 @@ public class GameManager : NetworkBehaviour
 
     private void updateScores(){
         players = GameObject.FindGameObjectsWithTag("Player");
-        int pointsToDistribute = points[currentRound-1] / players.Length;
+        int pointsToDistribute;
+        if (players.Length != 0) {
+            pointsToDistribute = points[currentRound-1] / players.Length;
+        } else {
+            pointsToDistribute = 0;
+        }
         //Debug.Log("points for today: " + points[currentRound-1]);
         //Debug.Log("Players.Length: " + players.Length);
         //Debug.Log("Points to Distribute: " + pointsToDistribute);
@@ -121,18 +126,20 @@ public class GameManager : NetworkBehaviour
             networkPoints.Add(playerPoints[i]);
         }
 
-        
+        //Debug.Log("helper length: " + helper.Length);
         //prevPlayerPoints = playerPoints;
         Array.Copy(playerPoints, helper, numberOfPlayers);
+        //Debug.Log("helper length 2: " + helper.Length);
         //helper = playerPoints;
         playerLeaderboard = SortAndIndex(helper);
+        
         Array.Reverse(playerLeaderboard);
         //playerPoints = prevPlayerPoints;
 
         /*for (int i = 0; i < playerLeaderboard.Length; i++) {
             Debug.Log("order: " + playerLeaderboard[i]);
         }*/
-
+        
         networkLeaderboard.Clear();
         
         for (int i = 0; i < playerLeaderboard.Length; i++) {
@@ -289,6 +296,7 @@ public class GameManager : NetworkBehaviour
     public void StartGame()
     {
         if (IsServer) {
+            //Debug.Log("numberofplayers: " + numberOfPlayers);
             playerPoints = new int[numberOfPlayers];
             helper = new int[numberOfPlayers];
             playerLeaderboard = new int[numberOfPlayers];
@@ -315,7 +323,7 @@ public class GameManager : NetworkBehaviour
 
         if (IsOwner) {
             players = GameObject.FindGameObjectsWithTag("Player");
-            Debug.Log(players.Length);
+            //Debug.Log(players.Length);
             foreach (GameObject player in players)
             {
                 //player.GetComponent<PlayerController>().spawnPlayerClientRpc();
