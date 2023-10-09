@@ -3,7 +3,6 @@ using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
 using System;
-using UnityEngine.SceneManagement;
 public class CameraTarget : NetworkBehaviour
 {
     private GameObject[] players;
@@ -19,22 +18,6 @@ public class CameraTarget : NetworkBehaviour
     float helper;
     public float verticalOffset = 0f;
     public float horizontalOffset = 0f;
-
-    void Awake(){
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    { 
-        if (scene.name == "GameRoom" && this != null) {
-            Destroy(this.gameObject);
-        }
-    }
-
-
-    // Suscribirse al cambio de estado del GameManager
-    
-
 
     // Buscar al jugador cuyo ID corresponda al del cameraTarget
     public void StartCam () {
