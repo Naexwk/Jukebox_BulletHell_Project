@@ -4,6 +4,8 @@ using UnityEngine;
 using System;
 using TMPro;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
+using Unity.Collections;
 
 public class GameManager : NetworkBehaviour
 {
@@ -40,6 +42,7 @@ public class GameManager : NetworkBehaviour
 
     // Variables de rondas
     static public int numberOfPlayers;
+    public static NetworkVariable<bool> changedPlayers = new NetworkVariable<bool>();
 
     private int[] points = {4,8,8,16,32};
     private int currentRound;
@@ -51,29 +54,80 @@ public class GameManager : NetworkBehaviour
 
     public NetworkList<int> networkPoints;
     public NetworkList<int> networkLeaderboard;
+    public NetworkList<FixedString64Bytes> networkPlayerNames;
 
     public static NetworkVariable<bool> handleLeaderboard = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone);
-    
+
+
     void Awake() {
         Instance = this;
         networkPoints = new NetworkList<int>();
-        networkLeaderboard = new NetworkList<int>(); 
+        networkLeaderboard = new NetworkList<int>();
+        networkPlayerNames = new NetworkList<FixedString64Bytes>();
         handleLeaderboard.Value = false;
+        //SceneManager.sceneLoaded += OnSceneLoaded;
+        NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
         //State = this.State;
         
     }
     
     void Start() {
+        //Debug.Log(SceneManager.GetActiveScene().name);
         UpdateGameState(GameState.LanConnection);
     }
+    
+    /*private void OnEnable() {
+        Debug.Log(SceneManager.GetActiveScene().name);
+        Debug.Log("Called");
+        if (SceneManager.GetActiveScene().name == "SampleScene"){
+            StartGame();
+            HandleStartGame();
+        }
+    }*/
 
-    public void AddPlayer(){
+    void OnSceneEvent (SceneEvent sceneEvent) {
+        if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
+            //Debug.Log ("Called OnSync");
+            if (SceneManager.GetActiveScene().name == "SampleScene"){
+                GameStarted.Value = false;
+                UpdateGameState(GameState.LanConnection);
+                StartGame();
+                HandleStartGame();
+            }
+
+            //if (SceneManager.GetActiveScene().name == "GameRoom"){
+                //StartGame();
+                //HandleStartGame();
+                
+            //}
+        }
+
+    }
+
+    /*void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    {
+        if (scene.name == "SampleScene") {
+            
+        }
+    }*/
+    
+
+    public void AddPlayer(string _name){
+
         numberOfPlayers++;
+        changedPlayers.Value = !changedPlayers.Value;
+        networkPlayerNames.Add(_name);
+        Debug.Log("Added " + _name);
     }
 
     private void updateScores(){
         players = GameObject.FindGameObjectsWithTag("Player");
-        int pointsToDistribute = points[currentRound-1] / players.Length;
+        int pointsToDistribute;
+        if (players.Length != 0) {
+            pointsToDistribute = points[currentRound-1] / players.Length;
+        } else {
+            pointsToDistribute = 0;
+        }
         //Debug.Log("points for today: " + points[currentRound-1]);
         //Debug.Log("Players.Length: " + players.Length);
         //Debug.Log("Points to Distribute: " + pointsToDistribute);
@@ -87,18 +141,20 @@ public class GameManager : NetworkBehaviour
             networkPoints.Add(playerPoints[i]);
         }
 
-        
+        //Debug.Log("helper length: " + helper.Length);
         //prevPlayerPoints = playerPoints;
         Array.Copy(playerPoints, helper, numberOfPlayers);
+        //Debug.Log("helper length 2: " + helper.Length);
         //helper = playerPoints;
         playerLeaderboard = SortAndIndex(helper);
+        
         Array.Reverse(playerLeaderboard);
         //playerPoints = prevPlayerPoints;
 
         /*for (int i = 0; i < playerLeaderboard.Length; i++) {
             Debug.Log("order: " + playerLeaderboard[i]);
         }*/
-
+        
         networkLeaderboard.Clear();
         
         for (int i = 0; i < playerLeaderboard.Length; i++) {
@@ -129,6 +185,7 @@ public class GameManager : NetworkBehaviour
         base.OnNetworkSpawn();
         // Modifica las NetworkVariables y realiza otras configuraciones aquí
         GameStarted.Value = false; // Por ejemplo, establece GameStarted en false cuando se inicie el NetworkObject
+        DontDestroyOnLoad(this.gameObject);
         UpdateGameState(GameState.LanConnection);
         
     }
@@ -151,13 +208,19 @@ public class GameManager : NetworkBehaviour
             if (IsOwner) {
                 currentRoundTime.Value -= Time.deltaTime;
             }
-            timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
+
+            if (timeText != null) {
+                timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
+            }
+            
             if(currentRoundTime.Value <= 10.1)
             {
-                timeText.text = Mathf.Round(currentRoundTime.Value ).ToString();
-                timeText.color = Color.red;
-                timeText.fontSize = 70;
-
+                if (timeText != null) {
+                    timeText.text = Mathf.Round(currentRoundTime.Value ).ToString();
+                    timeText.color = Color.red;
+                    timeText.fontSize = 70;
+                }
+                
             }
             if (currentRoundTime.Value <= 0.5 )
             {
@@ -200,7 +263,10 @@ public class GameManager : NetworkBehaviour
             if (IsOwner) {
                 currentPurchaseTime.Value -= Time.deltaTime;
             }
-            timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+            if (timeText != null) {
+                timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+            }
+            
             //Debug.Log(currentPurchaseTime.Value);
             if (currentPurchaseTime.Value <= 0)
             {
@@ -218,6 +284,7 @@ public class GameManager : NetworkBehaviour
         if (IsOwner) {
             State.Value = newState;
         }
+        Debug.Log("State: " + newState);
         switch(newState){
             case GameState.LanConnection:
                 HandleLanConnection();
@@ -253,12 +320,16 @@ public class GameManager : NetworkBehaviour
 
     public void StartGame()
     {
-        playerPoints = new int[numberOfPlayers];
-        helper = new int[numberOfPlayers];
-        playerLeaderboard = new int[numberOfPlayers];
-        currentRound = 1;
-        //Debug.Log(playerPoints.Length);
-        GameStarted.Value = true;
+        if (IsServer) {
+            //Debug.Log("numberofplayers: " + numberOfPlayers);
+            playerPoints = new int[numberOfPlayers];
+            helper = new int[numberOfPlayers];
+            playerLeaderboard = new int[numberOfPlayers];
+            currentRound = 1;
+            //Debug.Log(playerPoints.Length);
+            GameStarted.Value = true;
+        }
+        
     }
 
     public void CombatRound()
@@ -277,7 +348,7 @@ public class GameManager : NetworkBehaviour
 
         if (IsOwner) {
             players = GameObject.FindGameObjectsWithTag("Player");
-
+            //Debug.Log(players.Length);
             foreach (GameObject player in players)
             {
                 //player.GetComponent<PlayerController>().spawnPlayerClientRpc();
