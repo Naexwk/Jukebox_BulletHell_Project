@@ -5,6 +5,7 @@ using System;
 using TMPro;
 using Unity.Netcode;
 using UnityEngine.SceneManagement;
+using Unity.Collections;
 
 public class GameManager : NetworkBehaviour
 {
@@ -53,13 +54,16 @@ public class GameManager : NetworkBehaviour
 
     public NetworkList<int> networkPoints;
     public NetworkList<int> networkLeaderboard;
+    public NetworkList<FixedString64Bytes> networkPlayerNames;
 
     public static NetworkVariable<bool> handleLeaderboard = new NetworkVariable<bool>(default, NetworkVariableReadPermission.Everyone);
-    
+
+
     void Awake() {
         Instance = this;
         networkPoints = new NetworkList<int>();
-        networkLeaderboard = new NetworkList<int>(); 
+        networkLeaderboard = new NetworkList<int>();
+        networkPlayerNames = new NetworkList<FixedString64Bytes>();
         handleLeaderboard.Value = false;
         //SceneManager.sceneLoaded += OnSceneLoaded;
         NetworkManager.SceneManager.OnSceneEvent += OnSceneEvent;
@@ -84,10 +88,18 @@ public class GameManager : NetworkBehaviour
     void OnSceneEvent (SceneEvent sceneEvent) {
         if (sceneEvent.SceneEventType == SceneEventType.LoadEventCompleted) {
             //Debug.Log ("Called OnSync");
-                if (SceneManager.GetActiveScene().name == "SampleScene"){
+            if (SceneManager.GetActiveScene().name == "SampleScene"){
+                GameStarted.Value = false;
+                UpdateGameState(GameState.LanConnection);
                 StartGame();
                 HandleStartGame();
             }
+
+            //if (SceneManager.GetActiveScene().name == "GameRoom"){
+                //StartGame();
+                //HandleStartGame();
+                
+            //}
         }
 
     }
@@ -100,9 +112,12 @@ public class GameManager : NetworkBehaviour
     }*/
     
 
-    public void AddPlayer(){
+    public void AddPlayer(string _name){
+
         numberOfPlayers++;
         changedPlayers.Value = !changedPlayers.Value;
+        networkPlayerNames.Add(_name);
+        Debug.Log("Added " + _name);
     }
 
     private void updateScores(){
@@ -193,13 +208,19 @@ public class GameManager : NetworkBehaviour
             if (IsOwner) {
                 currentRoundTime.Value -= Time.deltaTime;
             }
-            timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
+
+            if (timeText != null) {
+                timeText.text = (Mathf.Round(currentRoundTime.Value * 10.0f) / 10.0f).ToString();
+            }
+            
             if(currentRoundTime.Value <= 10.1)
             {
-                timeText.text = Mathf.Round(currentRoundTime.Value ).ToString();
-                timeText.color = Color.red;
-                timeText.fontSize = 70;
-
+                if (timeText != null) {
+                    timeText.text = Mathf.Round(currentRoundTime.Value ).ToString();
+                    timeText.color = Color.red;
+                    timeText.fontSize = 70;
+                }
+                
             }
             if (currentRoundTime.Value <= 0.5 )
             {
@@ -242,7 +263,10 @@ public class GameManager : NetworkBehaviour
             if (IsOwner) {
                 currentPurchaseTime.Value -= Time.deltaTime;
             }
-            timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+            if (timeText != null) {
+                timeText.text = Mathf.Round(currentPurchaseTime.Value).ToString();
+            }
+            
             //Debug.Log(currentPurchaseTime.Value);
             if (currentPurchaseTime.Value <= 0)
             {
@@ -260,6 +284,7 @@ public class GameManager : NetworkBehaviour
         if (IsOwner) {
             State.Value = newState;
         }
+        Debug.Log("State: " + newState);
         switch(newState){
             case GameState.LanConnection:
                 HandleLanConnection();

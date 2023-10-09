@@ -81,10 +81,10 @@ public class PlayerController : NetworkBehaviour
         base.OnNetworkSpawn();
         DontDestroyOnLoad(this.gameObject);
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        if (IsOwner){
+        //if (IsOwner){
             //Debug.Log("player number: " + playerNumber);
-            spawnMenuManagerServerRpc(playerNumber);
-        }
+            //spawnMenuManagerServerRpc(playerNumber);
+        //}
     }
 
     // Obtener su cámara, generador de balas, número de jugador y colorear su outline
@@ -92,18 +92,13 @@ public class PlayerController : NetworkBehaviour
     void Start()
     {
         if (IsOwner) {
-            addPlayerServerRpc();
-        
+            GameObject relayManager = GameObject.FindWithTag("RelayManager");
+            string name = relayManager.GetComponent<LanBehaviour>().playerName;
+            addPlayerServerRpc(name);
         }
 
         changeCharacter("cheeseman");
-        
-        
-        
         //colorCodeToPlayer(outline, playerNumber);
-        
-        
-
     }
 
     private void Awake() {
@@ -126,6 +121,7 @@ public class PlayerController : NetworkBehaviour
 
             if (IsOwner) {
                 spawnCameraTargetServerRpc(playerNumber);
+                spawnMenuManagerServerRpc(playerNumber);
             }
         }
     }
@@ -444,9 +440,9 @@ public class PlayerController : NetworkBehaviour
     }
 
     [ServerRpc(RequireOwnership = false)]
-    public void addPlayerServerRpc(){
+    public void addPlayerServerRpc(string _name){
         GameObject gameManager = GameObject.FindWithTag("GameManager");
-        gameManager.GetComponent<GameManager>().AddPlayer();
+        gameManager.GetComponent<GameManager>().AddPlayer(_name);
     }
 
     public void changeCharacter(string _characterCode){

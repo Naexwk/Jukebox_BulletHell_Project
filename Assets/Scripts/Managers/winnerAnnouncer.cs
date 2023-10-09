@@ -12,7 +12,8 @@ public class winnerAnnouncer : MonoBehaviour
     void OnEnable()
     {
         gameManager = GameObject.FindWithTag("GameManager").GetComponent<GameManager>();
-        winnerText.text = "Player " + (gameManager.networkLeaderboard[0]+1) + " wins!";
+        
+        winnerText.text = (gameManager.networkPlayerNames[gameManager.networkLeaderboard[0]].ToString()) + " wins!";
     }
 
 }

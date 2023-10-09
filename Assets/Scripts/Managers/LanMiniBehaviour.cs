@@ -9,5 +9,4 @@ public class LanMiniBehaviour : NetworkBehaviour
     public void ChangeScene(string sceneName){
 		NetworkManager.SceneManager.LoadScene(sceneName, LoadSceneMode.Single);
 	}
-
 }

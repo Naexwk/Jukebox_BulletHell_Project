@@ -2519,6 +2519,7 @@ GameObject:
   - component: {fileID: 407735227}
   - component: {fileID: 407735226}
   - component: {fileID: 407735225}
+  - component: {fileID: 407735229}
   m_Layer: 5
   m_Name: btn_replay
   m_TagString: Untagged
@@ -2604,14 +2605,14 @@ MonoBehaviour:
       m_Calls:
       - m_Target: {fileID: 407735225}
         m_TargetAssemblyTypeName: SceneReload, Assembly-CSharp
-        m_MethodName: restartScene
-        m_Mode: 1
+        m_MethodName: restartGame
+        m_Mode: 5
         m_Arguments:
           m_ObjectArgument: {fileID: 0}
           m_ObjectArgumentAssemblyTypeName: UnityEngine.Object, UnityEngine
           m_IntArgument: 0
           m_FloatArgument: 0
-          m_StringArgument: 
+          m_StringArgument: GameRoom
           m_BoolArgument: 0
         m_CallState: 2
 --- !u!114 &407735227
@@ -2652,6 +2653,26 @@ CanvasRenderer:
   m_PrefabAsset: {fileID: 0}
   m_GameObject: {fileID: 407735223}
   m_CullTransparentMesh: 1
+--- !u!114 &407735229
+MonoBehaviour:
+  m_ObjectHideFlags: 0
+  m_CorrespondingSourceObject: {fileID: 0}
+  m_PrefabInstance: {fileID: 0}
+  m_PrefabAsset: {fileID: 0}
+  m_GameObject: {fileID: 407735223}
+  m_Enabled: 1
+  m_EditorHideFlags: 0
+  m_Script: {fileID: 11500000, guid: d5a57f767e5e46a458fc5d3c628d0cbb, type: 3}
+  m_Name: 
+  m_EditorClassIdentifier: 
+  GlobalObjectIdHash: 2532404
+  AlwaysReplicateAsRoot: 0
+  SynchronizeTransform: 1
+  ActiveSceneSynchronization: 0
+  SceneMigrationSynchronization: 1
+  SpawnWithObservers: 1
+  DontDestroyWithOwner: 0
+  AutoObjectParentSync: 1
 --- !u!1 &501779466
 GameObject:
   m_ObjectHideFlags: 0
@@ -5046,7 +5067,7 @@ GameObject:
   m_Icon: {fileID: 0}
   m_NavMeshLayer: 0
   m_StaticEditorFlags: 0
-  m_IsActive: 0
+  m_IsActive: 1
 --- !u!224 &847769495
 RectTransform:
   m_ObjectHideFlags: 0

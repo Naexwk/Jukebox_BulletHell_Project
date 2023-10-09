@@ -28,6 +28,9 @@ public class LanBehaviour : NetworkBehaviour
 	//public GameObject playButton;
 	string inputJoinCode;
 	public string hostJoinCode;
+	public string playerName = "Anon";
+
+	public GameObject  tf_newName;
 
 	void Awake () {
 		DontDestroyOnLoad(this.gameObject);
@@ -38,10 +41,10 @@ public class LanBehaviour : NetworkBehaviour
 		//ipAddress = "0.0.0.0";
 		//SetIpAddress();
 		await UnityServices.InitializeAsync();
-		AuthenticationService.Instance.SignedIn += () => {
-			Debug.Log("Signed in " + AuthenticationService.Instance.PlayerId);
-		};
 		await AuthenticationService.Instance.SignInAnonymouslyAsync();
+		//await AuthenticationService.Instance.UpdatePlayerNameAsync("Anon");
+		//Debug.Log(await AuthenticationService.Instance.GetPlayerNameAsync());
+
 	}
 
 	// Hostea un juego y añade un GameManager
@@ -138,51 +141,12 @@ public class LanBehaviour : NetworkBehaviour
 		}
 	}
 
-
-
-/*
-public struct RelayHostData
-{
-    public string JoinCode;
-    public string IPv4Address;
-    public ushort Port;
-    public Guid AllocationID;
-    public byte[] AllocationIDBytes;
-    public byte[] ConnectionData;
-    public byte[] Key;
-}
-
-public static async Task<RelayHostData> HostGame(int maxConn)
-{
-    //Initialize the Unity Services engine
-    await UnityServices.InitializeAsync();
-    //Always autheticate your users beforehand
-    if (!AuthenticationService.Instance.IsSignedIn)
-    {
-        //If not already logged, log the user in
-        await AuthenticationService.Instance.SignInAnonymouslyAsync();
-    }
-
-    //Ask Unity Services to allocate a Relay server
-    Allocation allocation = await Unity.Services.Relay.RelayService.Instance.CreateAllocationAsync(maxConn);
-
-    //Populate the hosting data
-    RelayHostData data = new RelayHostData
-    {
-        // WARNING allocation.RelayServer is deprecated
-        IPv4Address = allocation.RelayServer.IpV4,
-        Port = (ushort) allocation.RelayServer.Port,
-
-        AllocationID = allocation.AllocationId,
-        AllocationIDBytes = allocation.AllocationIdBytes,
-        ConnectionData = allocation.ConnectionData,
-        Key = allocation.Key,
-    };
-
-    //Retrieve the Relay join code for our clients to join our party
-    data.JoinCode = await Unity.Services.Relay.RelayService.Instance.GetJoinCodeAsync(data.AllocationID);
-
-    return data;
-}*/
+	public void changeName(){
+		playerName = tf_newName.GetComponent<TMP_InputField>().text;
+		// DEV: Later
+		//await AuthenticationService.Instance.UpdatePlayerNameAsync(newName);
+		Debug.Log(playerName);
+		//Debug.Log(await AuthenticationService.Instance.GetPlayerNameAsync());
+	}
 
 }

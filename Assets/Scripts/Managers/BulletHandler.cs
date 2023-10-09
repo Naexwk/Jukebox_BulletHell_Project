@@ -2,6 +2,7 @@ using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
 using Unity.Netcode;
+using UnityEngine.SceneManagement;
 public class BulletHandler : NetworkBehaviour
 {
 
@@ -20,6 +21,17 @@ public class BulletHandler : NetworkBehaviour
     public GameObject prefabCheeseBullet;
 
     private GameObject[] players;
+
+    void Awake(){
+        SceneManager.sceneLoaded += OnSceneLoaded;
+    }
+
+    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
+    { 
+        if (scene.name == "SampleScene" && this != null) {
+            players = GameObject.FindGameObjectsWithTag("Player");
+        }
+    }
         
 
     void Start(){

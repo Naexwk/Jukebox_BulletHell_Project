@@ -46,7 +46,8 @@ public class Leaderboard : MonoBehaviour
         for (int i = 0; i < gameManager.networkLeaderboard.Count; i++) {
             //Debug.Log("networkLeaderboard");
             //Debug.Log(gameManager.networkLeaderboard[i]);
-            playerNames[i].text = "Player " + ((gameManager.networkLeaderboard[i])+1);
+            //playerNames[i].text = "Player " + ((gameManager.networkLeaderboard[i])+1);
+            playerNames[i].text = gameManager.networkPlayerNames[gameManager.networkLeaderboard[i]].ToString();
             playerScores[i].text = "" + gameManager.networkPoints[gameManager.networkLeaderboard[i]];
         }
     }
