@@ -24,11 +24,7 @@ public class PlayerController : NetworkBehaviour
     public int bulletDamage;
 
     //Animacion
-    [SerializeField]
-    public RuntimeAnimatorController[] characterAnimator;
     public Animator animator;
-
-  
 
     // Variables de control
     public bool enableControl = false;
@@ -99,10 +95,6 @@ public class PlayerController : NetworkBehaviour
         
         colorCodeToPlayer(outline, playerNumber);
         if (characterCode == "cheeseman") {
-            animator.runtimeAnimatorController = characterAnimator[0];
-            specAb = new specialAbility(CheesemanSA);
-        } else if (characterCode == "sarge") {
-            animator.runtimeAnimatorController = characterAnimator[1];
             specAb = new specialAbility(CheesemanSA);
         }
 
