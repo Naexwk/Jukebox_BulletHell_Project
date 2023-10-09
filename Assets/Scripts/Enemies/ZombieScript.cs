@@ -7,17 +7,20 @@ using Unity.Netcode;
 public class ZombieScript : NetworkBehaviour
 {
     public float updateTimer = 1f;
+
+    public float speed;
     private Transform target;
     private NavMeshAgent agent;
 
     public NetworkVariable<int> health = new NetworkVariable<int>();
 
+    private Animator animator;
     //public int health;
 
     // Valores iniciales
     void Start()
     {
-        
+        animator = GetComponentInChildren<Animator>();
     }
 
     public override void OnNetworkSpawn()
@@ -81,10 +84,12 @@ public class ZombieScript : NetworkBehaviour
             // Si no hay jugadores, no moverse
             if (players.Length == 0) {
                 target = transform;
+                animator.SetBool("isMoving", false);
             } else {
                 float closestDistance = Mathf.Infinity;
                 foreach(GameObject p in players){
                     float distance = Vector2.Distance(transform.position, p.transform.position);
+                    animator.SetBool("isMoving", true);
                     if (distance < closestDistance){
                         closestDistance = distance;
                         target = p.transform;

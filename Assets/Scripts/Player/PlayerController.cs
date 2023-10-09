@@ -25,7 +25,11 @@ public class PlayerController : NetworkBehaviour
     public int bulletDamage;
 
     //Animacion
+    [SerializeField]
+    public RuntimeAnimatorController[] characterAnimator;
     public Animator animator;
+
+  
 
     // Variables de control
     public bool enableControl = false;
@@ -91,6 +95,27 @@ public class PlayerController : NetworkBehaviour
     // También asigna la función de habilidad especial a specAb
     void Start()
     {
+        GameObject gameManager = GameObject.FindWithTag("GameManager");
+        gameManager.GetComponent<GameManager>().AddPlayer();
+        _mainCamera = Camera.main;
+        bullethandler = GameObject.FindWithTag("BulletHandler");
+        playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
+        outline = gameObject.transform.GetChild(0).gameObject;
+
+        //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
+        if (IsOwner){
+            spawnMenuManagerServerRpc(playerNumber);
+        }
+        
+        
+        colorCodeToPlayer(outline, playerNumber);
+        if (characterCode == "cheeseman") {
+            animator.runtimeAnimatorController = characterAnimator[0];
+            specAb = new specialAbility(CheesemanSA);
+        } else if (characterCode == "sarge") {
+            animator.runtimeAnimatorController = characterAnimator[1];
+            specAb = new specialAbility(CheesemanSA);
+        }
         if (IsOwner) {
             GameObject relayManager = GameObject.FindWithTag("RelayManager");
             string name = relayManager.GetComponent<LanBehaviour>().playerName;
