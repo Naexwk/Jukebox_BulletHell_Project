@@ -25,11 +25,7 @@ public class PlayerController : NetworkBehaviour
     public int bulletDamage;
 
     //Animacion
-    [SerializeField]
-    public RuntimeAnimatorController[] characterAnimator;
     public Animator animator;
-
-  
 
     // Variables de control
     public bool enableControl = false;
@@ -96,7 +92,7 @@ public class PlayerController : NetworkBehaviour
     void Start()
     {
         GameObject gameManager = GameObject.FindWithTag("GameManager");
-        gameManager.GetComponent<GameManager>().AddPlayer();
+        //gameManager.GetComponent<GameManager>().AddPlayer(name);
         _mainCamera = Camera.main;
         bullethandler = GameObject.FindWithTag("BulletHandler");
         playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
@@ -110,10 +106,6 @@ public class PlayerController : NetworkBehaviour
         
         colorCodeToPlayer(outline, playerNumber);
         if (characterCode == "cheeseman") {
-            animator.runtimeAnimatorController = characterAnimator[0];
-            specAb = new specialAbility(CheesemanSA);
-        } else if (characterCode == "sarge") {
-            animator.runtimeAnimatorController = characterAnimator[1];
             specAb = new specialAbility(CheesemanSA);
         }
         if (IsOwner) {
