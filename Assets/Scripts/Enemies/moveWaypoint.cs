@@ -26,7 +26,7 @@ public class moveWaypoint : MonoBehaviour
     void waypointLeft(){
         transform.Translate(-speed*Time.deltaTime,0,0);
     }
-     void OnTriggerStay2D(Collider2D otherCollider)
+     void OnTriggerEnter2D(Collider2D otherCollider)
     {
         Debug.Log("HI");
         change = !change;
