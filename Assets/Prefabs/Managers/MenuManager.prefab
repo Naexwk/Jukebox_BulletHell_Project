@@ -10,7 +10,7 @@ GameObject:
   m_Component:
   - component: {fileID: 6236554720870500031}
   - component: {fileID: 1581223612461910552}
-  - component: {fileID: 8486584028174393965}
+  - component: {fileID: 4680641272694664367}
   m_Layer: 0
   m_Name: MenuManager
   m_TagString: Untagged
@@ -51,13 +51,10 @@ MonoBehaviour:
   _purchaseScreen: {fileID: 0}
   _purchaseItemsUI: {fileID: 0}
   _purchaseTrapsUI: {fileID: 0}
-  _vidaText: {fileID: 0}
-  _winScreen: {fileID: 0}
   myPlayer: {fileID: 0}
   myCameraTarget: {fileID: 0}
   UIHelper: {fileID: 0}
-  loaded: 0
---- !u!114 &8486584028174393965
+--- !u!114 &4680641272694664367
 MonoBehaviour:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}

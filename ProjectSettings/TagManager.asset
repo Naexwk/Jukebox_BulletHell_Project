@@ -19,7 +19,6 @@ TagManager:
   - LevelEditorManager
   - UIHelper
   - Spawner
-  - RelayManager
   layers:
   - Default
   - TransparentFX

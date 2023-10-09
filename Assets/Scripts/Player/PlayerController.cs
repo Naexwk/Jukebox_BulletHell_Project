@@ -3,7 +3,6 @@ using UnityEngine;
 using Unity.Netcode;
 using System;
 using System.Collections;
-using UnityEngine.SceneManagement;
 
 delegate void specialAbility();
 public class PlayerController : NetworkBehaviour
@@ -81,16 +80,6 @@ public class PlayerController : NetworkBehaviour
         }
     }
 
-    public override void OnNetworkSpawn() {
-        base.OnNetworkSpawn();
-        DontDestroyOnLoad(this.gameObject);
-        playerNumber = gameObject.GetComponent<NetworkObject>().OwnerClientId;
-        //if (IsOwner){
-            //Debug.Log("player number: " + playerNumber);
-            //spawnMenuManagerServerRpc(playerNumber);
-        //}
-    }
-
     // Obtener su cámara, generador de balas, número de jugador y colorear su outline
     // También asigna la función de habilidad especial a specAb
     void Start()
@@ -116,39 +105,11 @@ public class PlayerController : NetworkBehaviour
             animator.runtimeAnimatorController = characterAnimator[1];
             specAb = new specialAbility(CheesemanSA);
         }
+
         if (IsOwner) {
-            GameObject relayManager = GameObject.FindWithTag("RelayManager");
-            string name = relayManager.GetComponent<LanBehaviour>().playerName;
-            addPlayerServerRpc(name);
+            spawnCameraTargetServerRpc(playerNumber);
         }
 
-        changeCharacter("cheeseman");
-        //colorCodeToPlayer(outline, playerNumber);
-    }
-
-    private void Awake() {
-        SceneManager.sceneLoaded += OnSceneLoaded;
-    }
-
-
-    void OnSceneLoaded(Scene scene, LoadSceneMode mode)
-    {
-        if (scene.name == "SampleScene") {
-            _mainCamera = Camera.main;
-            bullethandler = GameObject.FindWithTag("BulletHandler");
-            
-            outline = gameObject.transform.GetChild(0).gameObject;
-
-            //Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
-            
-            // DEV 
-            
-
-            if (IsOwner) {
-                spawnCameraTargetServerRpc(playerNumber);
-                spawnMenuManagerServerRpc(playerNumber);
-            }
-        }
     }
 
     void Update()
@@ -390,10 +351,8 @@ public class PlayerController : NetworkBehaviour
     // Le dota su objetivo a la cámara
     [ClientRpc]
     public void startCameraClientRpc(){
-        //Debug.Log("Called here");
         GameObject mainCam;
         mainCam = GameObject.FindWithTag("MainCamera");
-        
         
         GameObject[] cameraTargets = GameObject.FindGameObjectsWithTag("CameraTarget");
         foreach (GameObject cameraTarget in cameraTargets)
@@ -412,9 +371,7 @@ public class PlayerController : NetworkBehaviour
         //Debug.Log("Called from " + _playerNumber);
         GameObject spawnMM;
         spawnMM = Instantiate(prefabMenuManager, new Vector3(0f,0f,0f), transform.rotation);
-        DontDestroyOnLoad(spawnMM);
         spawnMM.GetComponent<NetworkObject>().SpawnWithOwnership(_playerNumber);
-        
         
     }
 
@@ -463,36 +420,33 @@ public class PlayerController : NetworkBehaviour
         }
         
     }
-
-    [ServerRpc(RequireOwnership = false)]
-    public void addPlayerServerRpc(string _name){
-        GameObject gameManager = GameObject.FindWithTag("GameManager");
-        gameManager.GetComponent<GameManager>().AddPlayer(_name);
-    }
-
-    public void changeCharacter(string _characterCode){
-        characterCode = _characterCode;
-        if (_characterCode == "cheeseman") {
-            char_playerSpeed = 8f;
-            char_bulletSpeed = 30f;
-            char_maxHealth = 6;
-            char_fireRate = 3; // en disparos por segundo
-            char_bulletDamage = 3;
-            specAb = new specialAbility(CheesemanSA);
-            return;
+/*
+    [ClientRpc]
+    public void changeDeadStateClientRpc (bool isDead, ulong _playerNumber) {
+        GameObject[] players;
+        GameObject[] deadplayers;
+        players = GameObject.FindGameObjectsWithTag("Player");
+        deadplayers = GameObject.FindGameObjectsWithTag("Dead Player");
+        foreach (GameObject player in players) {
+            if (player.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+                if (isDead) {
+                    player.tag = "Dead Player";
+                } else {
+                    player.tag = "Player";
+                }
+            }
         }
-        if (_characterCode == "sarge") {
-            
-            char_playerSpeed = 6f;
-            char_bulletSpeed = 30f;
-            char_maxHealth = 10;
-            char_fireRate = 2; // en disparos por segundo
-            char_bulletDamage = 4;
-            specAb = new specialAbility(CheesemanSA);
-            return;
-        }
-    }
 
+        foreach (GameObject deadplayer in deadplayers) {
+            if (deadplayer.GetComponent<PlayerController>().playerNumber == _playerNumber) {
+                if (isDead) {
+                    deadplayer.tag = "Dead Player";
+                } else {
+                    deadplayer.tag = "Player";
+                }
+            }
+        }
+    }*/
 
 
 
