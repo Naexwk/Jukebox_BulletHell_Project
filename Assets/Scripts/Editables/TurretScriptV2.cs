@@ -20,6 +20,9 @@ public class TurretScriptV2 : MonoBehaviour
     private Vector2 Direction;
     public float force;
 
+    public float bulletSpeed = 5f;
+    public int bulletDamage = 5;
+
 
     void Start () {
         bullethandler = GameObject.FindWithTag("BulletHandler");
@@ -29,7 +32,7 @@ public class TurretScriptV2 : MonoBehaviour
     void Update()
     {
         float closestDistance = Mathf.Infinity;
-        GameObject[] players = GameObject.FindGameObjectsWithTag("Player");
+        GameObject[] players = GameObject.FindGameObjectsWithTag("Enemy");
         foreach(GameObject player in players){
             
             float distance = Vector2.Distance(transform.position, player.transform.position);
@@ -60,8 +63,14 @@ public class TurretScriptV2 : MonoBehaviour
     }
 
     void shoot(){
-        if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
+        GameObject clone;
+        clone = Instantiate(bullethandler.GetComponent<BulletHandler>().prefabBullet, Direction, Quaternion.identity);
+        clone.GetComponent<PlayerBullet>().bulletDamage = bulletDamage;
+        clone.GetComponent<PlayerBullet>().bulletSpeed = bulletSpeed;
+        clone.GetComponent<PlayerBullet>().bulletDirection = Direction;
+        clone.GetComponent<Rigidbody2D>().velocity = (Direction) * (bulletSpeed);
+        /*if (bullethandler.GetComponent<NetworkObject>().IsOwner) {
             bullethandler.GetComponent<BulletHandler>().spawnEnemyBulletServerRpc(force, Direction, shootPoint.position.x, shootPoint.position.y);
-        }
+        }*/
     }
 }

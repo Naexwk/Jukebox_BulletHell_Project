@@ -10,6 +10,8 @@ public class FakePlayerController : MonoBehaviour
 
     private NavMeshAgent agent;
 
+    private Vector3 newPosition; 
+
     void Start()
     {
         agent = GetComponent<NavMeshAgent>();
@@ -18,6 +20,7 @@ public class FakePlayerController : MonoBehaviour
     // Update is called once per frame
     void Update()
     {
-        agent.destination = waypoint.position; //used to be agent destination
+        agent.destination = waypoint.position;
+        transform.rotation = Quaternion.identity;
     }
 }
